@@ -10,7 +10,7 @@ Backend code for Hermes (including DB migrations, REST API, cron scripts, etc.)
 
 2) Download, install and start [PostgreSQL server](http://postgresapp.com/).
 
-3) Clone this repository to a folder on your computer. The rest of this document will refer to this folder as $PROJECT_ROOT.
+3) Clone this repository to a folder on your computer. The rest of this document will refer to this folder as `$PROJECT_ROOT`.
 
 4) Install project dependencies.
 
@@ -40,7 +40,7 @@ Backend code for Hermes (including DB migrations, REST API, cron scripts, etc.)
 
 ### Project directory structure
 
-`$PROJECT_ROOT`: Folder to which this repository was cloned.
-`$PROJECT_ROOT/bin`: Folder containing executable programs used by cron jobs, for utility purposes, etc.
-`$PROJECT_ROOT/conf`: Folder containing configuration files for the application.
+* `$PROJECT_ROOT`: Folder to which this repository was cloned.
+* `$PROJECT_ROOT/bin`: Folder containing executable programs used by cron jobs, for utility purposes, etc.
+* `$PROJECT_ROOT/conf`: Folder containing configuration files for the application.
 
