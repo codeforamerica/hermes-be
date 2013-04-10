@@ -7,7 +7,8 @@
     "sequelize": "1.6.0",
     "db-migrate": "0.4.1",
     "config": "0.4.22",
-    "pg": "1.0.0"
+    "pg": "1.0.0",
+    "requireindex": "1.0.0"
   },
   "engines": {
     "node": "0.8.x",

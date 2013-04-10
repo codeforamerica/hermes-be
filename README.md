@@ -47,7 +47,7 @@ Backend code for Hermes (including DB migrations, REST API, cron scripts, etc.)
 1) Start the REST API server.
 
     cd $PROJECT_ROOT
-    node server.js
+    node restapi/server.js
 
 ### To update court dates from CourtNet
 
