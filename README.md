@@ -17,7 +17,7 @@ Backend code for Hermes (including DB migrations, REST API, cron scripts, etc.)
     cd $PROJECT_ROOT
     npm install
 
-5) Create the database user (aka role). When prompted, enter the password as defined in the [`conf/default.js`](https://github.com/codeforamerica/hermes-be/blob/master/conf/default.js) file.
+5) Create the database user (aka role). When prompted, enter the password as defined in the [`config/default.js`](https://github.com/codeforamerica/hermes-be/blob/master/config/default.js) file.
 
     createuser hermes -P
 
