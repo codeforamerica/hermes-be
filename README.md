@@ -41,6 +41,6 @@ Backend code for Hermes (including DB migrations, REST API, cron scripts, etc.)
 ### Project directory structure
 
 `$PROJECT_ROOT`: Folder to which this repository was cloned. <br />
-└─`bin`: Folder containing executable programs used by cron jobs, for utility purposes, etc. <br />
-└─`conf`: Folder containing configuration files for the application. <br />
+└`bin`: Folder containing executable programs used by cron jobs, for utility purposes, etc. <br />
+└`conf`: Folder containing configuration files for the application. <br />
 
