@@ -17,7 +17,7 @@ Backend code for Hermes (including DB migrations, REST API, cron scripts, etc.)
     cd $PROJECT_ROOT
     npm install
 
-### To run the REST API
+### To start the REST API server
 
 1) Start the REST API server.
 
