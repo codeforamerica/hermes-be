@@ -17,6 +17,26 @@ Backend code for Hermes (including DB migrations, REST API, cron scripts, etc.)
     cd $PROJECT_ROOT
     npm install
 
+5) Create the database user (aka role). When prompted, enter the password as defined in the [https://github.com/codeforamerica/hermes-be/blob/master/conf/default.js](`conf/default.js`) file.
+
+    createuser hermes -P
+
+6) Create the database schema.
+
+    createdb hermes -O hermes
+
+7) Update the database schema.
+
+    cd $PROJECT_ROOT
+    node bin/update_db_schema.js
+
+### Every time you sync $PROJECT_ROOT with the remote GitHub repo
+
+1) Update the database schema.
+
+    cd $PROJECT_ROOT
+    node bin/update_db_schema.js
+
 ### To start the REST API server
 
 1) Start the REST API server.
