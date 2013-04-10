@@ -4,7 +4,7 @@ Backend code for Hermes (including DB migrations, REST API, cron scripts, etc.)
 
 ## Development setup (on Mac OS X 10.8)
 
-### One-time setup
+### First-time setup
 
 1) Download and install [Node.js](http://nodejs.org/).
 
@@ -17,22 +17,27 @@ Backend code for Hermes (including DB migrations, REST API, cron scripts, etc.)
     cd $PROJECT_ROOT
     npm install
 
-5) Create the database user (aka role). When prompted, enter the password as defined in the [`config/default.js`](https://github.com/codeforamerica/hermes-be/blob/master/config/default.js) file.
+5) Create the database user. When prompted, enter the password as defined in the [`config/default.js`](https://github.com/codeforamerica/hermes-be/blob/master/config/default.js) file.
 
     createuser hermes -P
 
-6) Create the database schema.
+6) Create the database and make the just-created user its owner.
 
     createdb hermes -O hermes
 
-7) Update the database schema.
+7) Create the database schema.
 
     cd $PROJECT_ROOT
     node bin/update_db_schema.js
 
 ### Every time you sync $PROJECT_ROOT with the remote GitHub repo
 
-1) Update the database schema.
+1) Update the project dependencies.
+
+    cd $PROJECT_ROOT
+    npm install
+
+2) Update the database schema.
 
     cd $PROJECT_ROOT
     node bin/update_db_schema.js
