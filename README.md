@@ -4,14 +4,15 @@ Backend code for Hermes (including DB migrations, REST API, cron scripts, etc.)
 
 ## Development setup (on Mac OS X 10.8)
 
-### Pre-requisites
-   * [Node.js](http://nodejs.org/) is installed.
-   * [PostgreSQL server](http://postgresapp.com/) is installed and running.
-   * This repository is cloned to a folder on your computer. The rest of this document will refer to this folder as $PROJECT_ROOT.
-
 ### One-time setup
 
-1) Install project dependencies.
+1) Download and install [Node.js](http://nodejs.org/).
+
+2) Download, install and start [PostgreSQL server](http://postgresapp.com/).
+
+3) Clone this repository to a folder on your computer. The rest of this document will refer to this folder as $PROJECT_ROOT.
+
+4) Install project dependencies.
 
     cd $PROJECT_ROOT
     npm install
