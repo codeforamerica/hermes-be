@@ -11,7 +11,7 @@ var server = restify.createServer({
 server.use(restify.bodyParser())
 
 // Routes
-server.post('/v1/case-contacts', resources.v1.case_contacts.post)
+server.post('/v1/messages', resources.v1.messages.post)
 
 // Start server
 server.listen(config.restapi.port, function() {
