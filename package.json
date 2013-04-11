@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": false,
   "dependencies": {
+    "async": "0.2.7",
     "restify": "2.3.5",
     "sequelize": "1.6.0",
     "db-migrate": "0.4.1",
