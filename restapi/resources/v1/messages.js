@@ -96,6 +96,11 @@ var parseCaseNumberFromBody = function(body, cb) {
 
 var processBodyForExistingCaseContact = function(contact, kase, body, cb) {
 
+  cb(makeError(200, "Looks like you are already subscribed to case # "
+               + kase.number + ". Sorry we do not support subscribing "
+               + "to multiple cases from the same cell phone # at this "
+               + "time."))
+
 }
 
 var createCaseForContact = function(caseNumber, contact, cb) {
