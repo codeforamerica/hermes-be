@@ -84,7 +84,7 @@ var parseCaseNumberFromBody = function(body, cb) {
   } else { 
   
     err = 'Could not parse case number from body'
-    cb(makeError(400, "This does not look like a case number", err))
+    cb(makeError(200, "This does not look like a case number", err))
 
   }
 
