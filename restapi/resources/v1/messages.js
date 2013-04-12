@@ -1,5 +1,6 @@
 var models = require('../../../models'),
-    sprintf = require('sprintf').sprintf
+    sprintf = require('sprintf').sprintf,
+    twilio = require('twilio')
 
 var makeError = function(code, message, err) {
 
@@ -8,6 +9,14 @@ var makeError = function(code, message, err) {
     code: code,
     message: message
   }
+}
+
+var makeTwimlResponse = function(message) {
+
+  var twiml = new twilio.TwimlResponse()
+  twiml.sms(response.message)
+  return twiml.toString()
+
 }
 
 var createContactIfNotExists = function(cellNumber, cb) {
@@ -123,7 +132,7 @@ exports.post = function(req, res) {
   var body = req.params.Body
 
   if (!(messageId && from && to && body)) {
-    res.send(400, 'Unexpected message.')
+    res.send(400, makeTwimlResponse('Unexpected message.'))
   }
 
   var receivedOn = new Date()
@@ -131,11 +140,11 @@ exports.post = function(req, res) {
   // Create contact if doesn't exist
   createContactIfNotExists(from, function(err, contact) {
     
-    if (err) res.send(err.code, err.message)
+    if (err) res.send(err.code, makeTwimlResponse(err.message))
 
     checkIfCaseExistsForContact(contact, function(err, cases) {
 
-      if (err) res.send(err.code, err.message)
+      if (err) res.send(err.code, makeTwimlResponse(err.message))
       
       if (cases.length == 0) {
 
@@ -143,18 +152,18 @@ exports.post = function(req, res) {
         
         parseCaseNumberFromBody(body, function(err, caseNumber) {
 
-          if (err) res.send(err.code, err.message)
+          if (err) res.send(err.code, makeTwimlResponse(err.message))
           else {
   
             createCaseForContact(caseNumber, contact, function(err, kase) {
               
-              if (err) res.send(err.code, err.message)
+              if (err) res.send(err.code, makeTwimlResponse(err.message))
               
               recordMessageFromContact(from, to, messageId, body, contact, kase, function(err) {
 
-                if (err) res.send(err.code, err.message)
+                if (err) res.send(err.code, makeTwimlResponse(err.message))
                 
-                res.send(201, 'Case created for contact.')
+                res.send(201, makeTwimlResponse('Case created for contact.'))
 
               })
               
@@ -172,9 +181,9 @@ exports.post = function(req, res) {
 
         processBodyForExistingCaseContact(contact, kase, body, function(err, response) {
 
-          if (err) res.send(err.code, err.message)
+          if (err) res.send(err.code, makeTwimlResponse(err.message))
 
-          res.send(response.code, response.message)
+          res.send(response.code, makeTwimlResponse(response.message))
 
         })
         

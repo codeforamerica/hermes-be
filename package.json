@@ -10,7 +10,8 @@
     "config": "0.4.22",
     "pg": "1.0.0",
     "requireindex": "1.0.0",
-    "sprintf": "0.1.1"
+    "sprintf": "0.1.1",
+    "twilio": "1.1.0"
   },
   "engines": {
     "node": "0.10.x",
