@@ -1,4 +1,4 @@
-<img src='http://www.aresluna.org/cfa/hermes-doc.jpg'>
+<img src='http://www.aresluna.org/cfa/hermes-be.jpg'>
 
 # hermes-be
 
