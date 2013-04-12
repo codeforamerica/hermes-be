@@ -17,6 +17,10 @@ var sendTwimlResponse = function(response, res) {
   twiml.sms(response.message)
 
   var body = twiml.toString()
+
+  console.log('Responding with status code = ' + response.code)
+  console.log('Responding with TwiML = ' + body)
+
   res.writeHead(response.code, {
     'Content-Type': 'text/xml',
     'Content-Length': body.length
