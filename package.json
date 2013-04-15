@@ -4,9 +4,11 @@
   "private": false,
   "dependencies": {
     "async": "0.2.7",
+    "cheerio": "0.10.8",
     "config": "0.4.22",
     "db-migrate": "0.4.1",
     "pg": "1.0.0",
+    "request": "2.16.6",
     "requireindex": "1.0.0",
     "restify": "2.3.5",
     "sequelize": "1.6.0",
@@ -16,6 +18,12 @@
   "engines": {
     "node": "0.10.x",
     "npm": "1.2.x"
+  },
+  "devDependencies": {
+    "jasmine-node": "1.6.0"
+  },
+  "scripts": {
+    "test": "jasmine-node spec/"
   },
   "license": "MIT"
 }
