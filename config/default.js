@@ -8,5 +8,8 @@ module.exports = {
   },
   restapi: {
     port: 8080
+  },
+  responses: {
+    clerkPhone: "(999) 999-9999"
   }
 }
