@@ -1,0 +1,29 @@
+{{!
+
+NOTE: Please edit the text *below* this section; The text in this 
+section is documentation and will not be rendered.
+
+PURPOSE: This template is used to respond to defendants subscribing to
+a case.
+
+VARIABLES AVAILABLE:
+* caseNumber: Number of case to which defendant has been subscribed.
+              E.g. 13-T-002183
+* title: Title of case. E.g. COMMONWEALTH VS. DOE, JOHN H
+* defendantFirstName: First name of defendant. Might be blank. E.g. Kenisha
+* defendantLastName: Last name of defendant. Might be blank. E.g. Woods
+
+FUNCTIONS AVAILABLE:
+* defendantNameExists: Returns true if defendant first AND last name
+                       exist; false, otherwise.
+}}
+
+{{#defendantNameExists}}
+    Thank you. This case is about {{defendantFirstName}} {{defendantLastName}}. Is this the case you want us to remind you about? Text YES or NO.
+{{/defendantNameExists}}
+
+
+{{^defendantNameExists}}
+    Thank you. This case is about {{title}}. Is this the case you want us to remind you about? Text YES or NO.
+{{/defendantNameExists}}
+
