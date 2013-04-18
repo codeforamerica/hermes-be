@@ -69,5 +69,12 @@ Backend code for Hermes (including DB migrations, REST API, cron scripts, etc.)
 
 `$PROJECT_ROOT`: Folder to which this repository was cloned. <br />
 └`bin`: Folder containing executable programs used by cron jobs, for utility purposes, etc. <br />
-└`conf`: Folder containing configuration files for the application. <br />
+└`config`: Folder containing configuration files for the application. <br />
+└`lib`: Folder containing code shared by various parts of the application. <br />
+└`migrations`: Folder containing database schema migrations. <br />
+└`models`: Folder containing models that let the application communicate with the data store. <br />
+└`restapi`: Folder containing code for the REST API server, resources and documentation. </br />
+└`spec`: Folder containing unit tests. <br />
+└`templates`: Folder containing template files used by the application to render SMS responses, etc. <br />
+
 
