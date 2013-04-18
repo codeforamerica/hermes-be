@@ -1,4 +1,5 @@
 var config = require('config'),
+    common = require('./common.js'),
     templateRenderer = require('../../../lib/template_renderer.js')
 
 exports.selfLink = function(id) {
@@ -9,14 +10,14 @@ exports.get = function(req, res) {
 
   var id = req.params.id
   if (!id) {
-    res.send(400, 'Please pass in template name')
+    res.send(400, common.getErrorJson('Please pass in template name'))
   }
 
   var renderer = templateRenderer()
   renderer.exists(id, function(exists) {
 
     if (!exists) {
-      res.send(404, "Template '" + id + "' does not exist")
+      res.send(404, common.getErrorJson("Template '" + id + "' does not exist"))
     }
 
     else {
@@ -25,7 +26,7 @@ exports.get = function(req, res) {
         
         if (err) {
           console.error(err)
-          res.send(500, 'Could not retrieve template.')
+          res.send(500, common.getErrorJson('Could not retrieve template.'))
         }
 
         else {
@@ -44,7 +45,7 @@ exports.post = function(req, res) {
 
   var id = req.params.id
   if (!id) {
-    res.send(400, 'Please pass in template name')
+    res.send(400, common.getErrorJson('Please pass in template name'))
   }
 
   var replacements = JSON.parse(req.body)
@@ -54,7 +55,7 @@ exports.post = function(req, res) {
 
     if (err) {
       console.error(err)
-      res.send(500, 'Could not render template.')
+      res.send(500, common.getErrorJson('Could not render template.'))
     }
 
     else {

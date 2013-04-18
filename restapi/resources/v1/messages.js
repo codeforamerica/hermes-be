@@ -1,17 +1,8 @@
 var twilio = require('twilio'),
+    common = require('./common.js'),
     messageProcessor = require('../../../lib/message_processor.js')
     
 exports.post = function(req, res) {
-
-  var sendErrorResponse = function(err) {
-
-    if (err.err) {
-      console.error(err.err)
-    }
-
-    res.send(err.code, err.message)
-    
-  }
 
   var sendTwimlResponse = function(responseText) {
     
@@ -38,13 +29,13 @@ exports.post = function(req, res) {
   var body = req.params.Body
   
   if (!(messageId && from && to && body)) {
-    sendErrorResponse({ code: 400, message: 'Unexpected message.'})
+    res.send(400, common.getErrorJson('Unexpected message.'))
   }
 
   processor = messageProcessor(from, to, body, messageId, receivedAt)
   processor.process(function(err, responseText) {
     if (err) {
-      sendErrorResponse(err)
+      res.send(err.code, common.getErrorJson(err.message))
     } else {
       sendTwimlResponse(responseText)
     }
