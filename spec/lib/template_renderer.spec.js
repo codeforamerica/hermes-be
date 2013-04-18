@@ -55,4 +55,18 @@ describe("Template Renderer", function() {
     
   }) // END describe - for exists
 
+  describe("for raw", function() {
+
+    it ("should return the raw template", function(done) {
+
+      renderer.raw("simple-template", function(err, rawText) {
+        expect(err).toBe(null)
+        expect(rawText).toBe("This should be a case number: {{caseNumber}}.")
+        done()
+      })
+
+    })
+
+  }) // END describe - for raw
+
 })
