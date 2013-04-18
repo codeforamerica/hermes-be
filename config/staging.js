@@ -1,5 +1,5 @@
 module.exports = {
   restapi: {
-    baseurl: 'http://hermes-api-staging.herokuapp.com'
+    baseuri: 'http://hermes-api-staging.herokuapp.com'
   }
 }
