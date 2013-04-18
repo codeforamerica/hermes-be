@@ -20,6 +20,7 @@ exports.get = function(req, res) {
       renderer.raw(id, function(err, rawText) {
         
         if (err) {
+          console.error(err)
           res.send(500, 'Could not retrieve template.')
         }
 
@@ -36,5 +37,26 @@ exports.get = function(req, res) {
 }
 
 exports.post = function(req, res) {
+
+  var id = req.params.id
+  if (!id) {
+    res.send(400, 'Please pass in template name')
+  }
+
+  var replacements = JSON.parse(req.body)
+
+  var renderer = templateRenderer()
+  renderer.render(id, replacements, function(err, renderedText) {
+
+    if (err) {
+      console.error(err)
+      res.send(500, 'Could not render template.')
+    }
+
+    else {
+      res.send(200, renderedText)
+    }
+
+  })
 
 }
