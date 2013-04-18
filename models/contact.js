@@ -30,7 +30,7 @@ var Contact = sequelize.define('contacts', {
 
     },
 
-    isValidNumber: function(cellNumber) {
+    isValidCellNumber: function(cellNumber) {
       cellNumber = cellNumber.replace(/[^\d]/g, '').trim()
       return (cellNumber.match(CELL_NUMBER_REGEXP) != null)
     }
