@@ -9,6 +9,8 @@ var server = restify.createServer({
 })
 
 server.use(restify.bodyParser())
+server.use(restify.CORS())
+server.use(restify.fullResponse())
 
 // Routes
 server.post('/v1/messages', resources.v1.messages.post)
