@@ -1,6 +1,37 @@
 # REST API
 
+## Base URIs
+   * Development: `http://localhost:8080/`
+
 ## Resources
+
+### Templates
+
+#### To retrieve the raw text of a template
+
+##### Request
+    GET {base-uri}/v1/template/{id}
+
+##### Response (success)
+
+    200 OK
+
+    "This is a test template with a variable here: {{someVariable}}"
+
+#### To retrieve a rendered template given replacements
+
+##### Request
+    POST {base-uri}/v1/template/{id}
+
+    {
+      "someVariable": "foobar"
+    }
+
+##### Response (success)
+
+    200 OK
+
+    "This is a test template with a variable here: foobar"
 
 ### Case Contacts
 
