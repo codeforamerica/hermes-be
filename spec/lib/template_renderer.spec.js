@@ -69,4 +69,20 @@ describe("Template Renderer", function() {
 
   }) // END describe - for raw
 
+  describe("for list", function() {
+    
+    it ("should return the list of existing templates", function(done) {
+
+      renderer.list(function(err, list) {
+        expect(err).toBe(null)
+        expect(list).not.toBe(null)
+        expect(list.length).toBe(1)
+        expect(list[0]).toBe('simple-template')
+        done()
+      })
+
+    })
+
+  }) // END describe - for list
+
 })
