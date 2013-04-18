@@ -65,7 +65,7 @@ Backend code for Hermes (including DB migrations, REST API, cron scripts, etc.)
     cd $PROJECT_ROOT
     node bin/sms_reminder.js
 
-### Project directory structure
+### Project folder structure
 
 `$PROJECT_ROOT`: Folder to which this repository was cloned. <br />
 └`bin`: Folder containing executable programs used by cron jobs, for utility purposes, etc. <br />
