@@ -12,6 +12,8 @@ server.use(restify.bodyParser())
 
 // Routes
 server.post('/v1/messages', resources.v1.messages.post)
+server.get('/v1/template/:id', resources.v1.template.get)
+server.post('/v1/template/:id', resources.v1.template.post)
 
 // Start server
 server.listen(config.restapi.port, function() {
