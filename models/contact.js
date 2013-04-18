@@ -1,4 +1,5 @@
-var sequelize = require('../lib/sequelize.js'),
+var config = require('config'),
+    sequelize = require('../lib/sequelize.js'),
     Sequelize = require('sequelize'),
     Message = require('./message.js')
 
@@ -12,10 +13,16 @@ var Contact = sequelize.define('contacts', {
       cellNumber = cellNumber.replace(/[^\d]/g, '').trim()
 
       // FIXME: This assumes US numbers; Need l10n.
-      if (cellNumber.length == 10) {
-        cellNumber = '+1' + cellNumber
+
+      if (cellNumber.length == 7) {
+        cellNumber = config.misc.cellPhoneAreaCode + cellNumber
       }
-      else if ((cellNumber.length == 11) && (cellNumber[0] == '1')) {
+
+      if (cellNumber.length == 10) {
+        cellNumber = '1' + cellNumber
+      }
+      
+      if ((cellNumber.length == 11) && (cellNumber[0] == '1')) {
         cellNumber = '+' + cellNumber
       }
 

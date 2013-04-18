@@ -1,4 +1,5 @@
-var models = require('../../models')
+var models = require('../../models'),
+    config = require('config')
 
 describe("Contact model", function() {
 
@@ -33,7 +34,7 @@ describe("Contact model", function() {
   describe("for normalizeCellNumber", function() {
 
     it ("should return number without dashes if phone number with dashes is given", function() {
-      expect(models.contact.normalizeCellNumber('123-4569')).toBe('1234569')
+      expect(models.contact.normalizeCellNumber('123-4569')).toBe('+1' + config.misc.cellPhoneAreaCode + '1234569')
     })
 
     it ("should return number with leading +1 if 10-digit phone number is given", function() {
@@ -42,6 +43,10 @@ describe("Contact model", function() {
 
     it ("should return number with leading + if 11-digit phone number with leading 1 is given", function() {
       expect(models.contact.normalizeCellNumber('1 (405) 123-4569')).toBe('+14051234569')
+    })
+
+    it ("should add area code if missing", function() {
+      expect(models.contact.normalizeCellNumber('923.3822')).toBe('+1' + config.misc.cellPhoneAreaCode + '9233822')
     })
 
   }) // END describe - for normalizeCellNumber

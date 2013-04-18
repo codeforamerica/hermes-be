@@ -12,5 +12,8 @@ module.exports = {
   },
   responses: {
     clerkPhone: "(999) 999-9999"
+  },
+  misc: {
+    cellPhoneAreaCode: "502"
   }
 }
