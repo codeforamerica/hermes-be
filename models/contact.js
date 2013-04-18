@@ -31,8 +31,14 @@ var Contact = sequelize.define('contacts', {
     },
 
     isValidCellNumber: function(cellNumber) {
+
+      if (cellNumber == undefined) {
+        return false
+      }
+
       cellNumber = cellNumber.replace(/[^\d]/g, '').trim()
       return (cellNumber.match(CELL_NUMBER_REGEXP) != null)
+
     }
   }
 })

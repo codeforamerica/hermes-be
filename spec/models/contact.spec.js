@@ -29,6 +29,10 @@ describe("Contact model", function() {
       expect(models.contact.isValidCellNumber('203-145-679')).toBe(false)
     })
 
+    it ("should return false if phone number is undefined", function() {
+      expect(models.contact.isValidCellNumber()).toBe(false)
+    })
+
   }) // END describe - for isValidCellNumber
 
   describe("for normalizeCellNumber", function() {
