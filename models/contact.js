@@ -2,16 +2,16 @@ var sequelize = require('../lib/sequelize.js'),
     Sequelize = require('sequelize'),
     Message = require('./message.js')
 
-var CELL_NUMBER_REGEXP = /^(\+\d)?[\d\.\-\s]+$/
+CELL_NUMBER_REGEXP = /^(\d{7}|(\+?1)?\d{10})$/
 
 var Contact = sequelize.define('contacts', {
   cell_number: Sequelize.STRING
 }, {
   classMethods: {
     normalizeCellNumber: function(cellNumber) {
-      cellNumber = cellNumber.replace(/[^\d]/, '')
+      cellNumber = cellNumber.replace(/[^\d]/g, '').trim()
 
-      // ASSUMPTION! All 10-digit numbers are US numbers!
+      // FIXME: This assumes US numbers; Need l10n.
       if (cellNumber.length == 10) {
         cellNumber = '+1' + cellNumber
       }
@@ -24,6 +24,7 @@ var Contact = sequelize.define('contacts', {
     },
 
     isValidNumber: function(cellNumber) {
+      cellNumber = cellNumber.replace(/[^\d]/g, '').trim()
       return (cellNumber.match(CELL_NUMBER_REGEXP) != null)
     }
   }
