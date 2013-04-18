@@ -14,6 +14,7 @@ server.use(restify.bodyParser())
 server.post('/v1/messages', resources.v1.messages.post)
 server.get('/v1/template/:id', resources.v1.template.get)
 server.post('/v1/template/:id', resources.v1.template.post)
+server.get('/v1/templates', resources.v1.templates.get)
 
 // Start server
 server.listen(config.restapi.port, function() {

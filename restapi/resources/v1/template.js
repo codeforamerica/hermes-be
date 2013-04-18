@@ -1,5 +1,9 @@
-var fs = require('fs'),
+var config = require('config'),
     templateRenderer = require('../../../lib/template_renderer.js')
+
+exports.selfLink = function(id) {
+  return config.restapi.baseuri + '/v1/template/' + id
+}
 
 exports.get = function(req, res) {
 

@@ -15,6 +15,7 @@ module.exports = {
     port: matches[5]
   },
   restapi: {
-    port: process.env.PORT
+    port: process.env.PORT,
+    baseurl: 'http://hermes-api.herokuapp.com'
   }
 }
