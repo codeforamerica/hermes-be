@@ -13,4 +13,6 @@ results
 
 npm-debug.log
 
+# Generated files/folders
 node_modules/
+config/runtime.json
