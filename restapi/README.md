@@ -86,7 +86,7 @@
     }
 
 ###### Notes
-* **IMPORTANT!** The `cellNumber` specified above will receive an SMS about their subscription. So please be aware of the number you use there. It is recommended you **use your own number when testing**.
+* **IMPORTANT!** The `cellNumber` specified in the request body will receive an SMS about their subscription. So please be aware of the number you use there. It is recommended you **use your own number when testing**.
 * The case number specified in the URI will be normalized.
 * The cell number specified in the request body will be normalized. If a 7-digit number is specified, a default area code will be prefixed. This default area code is specified by the configuration key `misc.cellPhoneAreaCode` (defined in [these configuration files](https://github.com/codeforamerica/hermes-be/tree/master/config)).
 
