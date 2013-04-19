@@ -85,6 +85,8 @@
       "cellNumber": "4082032450"
     }
 
+*IMPORTANT! The `cellNumber` specified above will receive an SMS about their subscription. So please be aware of the number you use there. It is recommended you use your own number when testing.*
+
 ##### Response (success)
 
     201 Created
