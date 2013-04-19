@@ -23,5 +23,12 @@ module.exports = {
   },
   misc: {
     cellPhoneAreaCode: "502"
+  },
+  sms: {
+    from: '+14159928992'
+  },
+  twilio: {
+    accountSid: process.env.TWILIO_ACCOUNT_SID,
+    authToken: process.env.TWILIO_AUTH_TOKEN
   }
 }
