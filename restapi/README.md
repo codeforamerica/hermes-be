@@ -74,12 +74,12 @@
 
     "This is a test template with a variable here: foobar"
 
-### Case Contacts
+### Case Subscribers
 
-#### To create a new case contact
+#### To create a new case subscriber
 
 ##### Request
-    POST {base-uri}/v1/case/13-T-000001/contacts
+    POST {base-uri}/v1/case/13-T-000001/subscribers
 
     {
       "cellNumber": "1111111111"

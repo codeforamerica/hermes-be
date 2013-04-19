@@ -52,16 +52,16 @@ exports.post = function(req, res) {
       var contact = results[0]
       var kase = results[1]
   
-      // Create case-contact if it doesn't already exist
-      findOrCreateCaseContact(kase, contact, function(err, caseContact) {
+      // Create case subscription if it doesn't already exist
+      findOrCreateCaseSubscription(kase, contact, function(err, caseSubscription) {
 
         if (err) {
-          res.send(500, 'Could not find or create subscription.')
+          res.send(500, 'Could not find or create case subscription.')
         }
         
         else {
           
-          setCaseContactSubscriptionState(caseContact, 'SUBSCRIBED', function(err) {
+          setCaseSubscriptionState(caseSubscription, 'SUBSCRIBED', function(err) {
 
             if (err) {
               res.send(500, 'Could not set subscription state to SUBSCRIBED.')
@@ -145,11 +145,11 @@ exports.post = function(req, res) {
               
             } // END else - set subscription state
             
-          }) // END - setCaseContactSubscriptionState
+          }) // END - setCaseSubscriptionState
           
         } // END else - find or create subscription
         
-      }) // END - findOrCreateCaseContact
+      }) // END - findOrCreateCaseSubscription
       
     } // END else - find or create case or contact
 
@@ -173,25 +173,25 @@ var findOrCreateCase = function(caseNumber, cb) {
   
 } // END function - findOrCreateCase
 
-var findOrCreateCaseContact = function(kase, contact, cb) {
+var findOrCreateCaseSubscription = function(kase, contact, cb) {
 
-  models.case_contact.findOrCreate({
+  models.case_subscription.findOrCreate({
     case_id: kase.id,
     contact_id: contact.id
   })
-    .success(function(caseContact) { cb(null, caseContact) })
+    .success(function(caseSubscription) { cb(null, caseSubscription) })
     .error(cb)
 
-} // END function - findOrCreateCaseContact
+} // END function - findOrCreateCaseSubscription
 
-var setCaseContactSubscriptionState = function(caseContact, subscriptionState, cb) {
+var setCaseSubscriptionState = function(caseSubscription, state, cb) {
 
-  caseContact.subscription_state = subscriptionState
-  caseContact.save()
-    .success(function(caseContact) { cb(null, caseContact) })
+  caseSubscription.state = state
+  caseSubscription.save()
+    .success(function(caseSubscription) { cb(null, caseSubscription) })
     .error(cb)
 
-} // END function - setCaseContactSubscriptionState
+} // END function - setCaseSubscriptionState
 
 var persistCaseDetails = function(kase, details, cb) {
 

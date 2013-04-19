@@ -13,7 +13,7 @@ server.use(restify.CORS())
 server.use(restify.fullResponse())
 
 // Routes
-server.post('/v1/case/:number/contacts', resources.v1.case_contacts.post)
+server.post('/v1/case/:number/subscribers', resources.v1.case_subscribers.post)
 server.post('/v1/messages', resources.v1.messages.post)
 server.get('/v1/template/:id', resources.v1.template.get)
 server.post('/v1/template/:id', resources.v1.template.post)

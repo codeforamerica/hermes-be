@@ -45,8 +45,8 @@ var Case = sequelize.define('cases', {
   
 })
 
-Case.hasMany(Contact, { joinTableName: 'case_contacts', foreignKey: 'case_id' })
-Contact.hasMany(Case, { joinTableName: 'case_contacts', foreignKey: 'contact_id' })
+Case.hasMany(Contact, { joinTableName: 'case_subscriptions', foreignKey: 'case_id' })
+Contact.hasMany(Case, { joinTableName: 'case_subscriptions', foreignKey: 'contact_id' })
 Case.hasMany(Message)
 
 module.exports = Case
