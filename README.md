@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/codeforamerica/hermes-be.png?branch=master)](https://travis-ci.org/codeforamerica/hermes-be)
+
 <img src='http://www.aresluna.org/cfa/hermes-be.jpg'>
 
 # hermes-be
