@@ -49,21 +49,21 @@ Backend code for Hermes (including DB migrations, REST API, cron scripts, etc.)
 1) Start the REST API server.
 
     cd $PROJECT_ROOT
-    node restapi/server.js
+    TWILIO_ACCOUNT_SID=&lt;Twilio Account SID&gt; TWILIO_AUTH_TOKEN=&lt;Twilio Auth Token&gt; node restapi/server.js
 
 ### To update court dates from CourtNet
 
 1) Run the Court Date Updater script.
 
     cd $PROJECT_ROOT
-    node bin/court_date_updater.js
+    TWILIO_ACCOUNT_SID=&lt;Twilio Account SID&gt; TWILIO_AUTH_TOKEN=&lt;Twilio Auth Token&gt; node bin/court_date_updater.js
 
 ### To send SMS reminders for tomorrow's court dates
 
 1) Run the SMS Reminder script.
 
     cd $PROJECT_ROOT
-    node bin/sms_reminder.js
+    TWILIO_ACCOUNT_SID=&lt;Twilio Account SID&gt; TWILIO_AUTH_TOKEN=&lt;Twilio Auth Token&gt; node bin/sms_reminder.js
 
 ### Project folder structure
 
