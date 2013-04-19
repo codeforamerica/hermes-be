@@ -79,10 +79,10 @@
 #### To create a new case contact
 
 ##### Request
-    POST {base-uri}/v1/case/{number}/contacts
+    POST {base-uri}/v1/case/13-T-000001/contacts
 
     {
-      "cellNumber": "513246984"
+      "cellNumber": "4082032450"
     }
 
 ##### Response (success)
