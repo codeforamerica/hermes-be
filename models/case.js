@@ -6,6 +6,19 @@ var sequelize = require('../lib/sequelize.js'),
 
 var CASE_NUMBER_REGEXP = /(\d[1-9]?)-?(AD|C|CI|CR|D|F|H|J|M|P|S|T|XX)-?(\d{0,5}[1-9])-?(\d{0,2}[1-9])?/
 
+var parseCaseNumber = function(caseNumber) {
+
+  var matches = caseNumber.match(CASE_NUMBER_REGEXP)
+  
+  return {
+    year: parseInt(matches[1]),
+    type: matches[2].toUpperCase(),
+    serial: parseInt(matches[3]),
+    defendant: matches[4]
+  }
+
+}
+  
 var Case = sequelize.define('cases', {
   number: Sequelize.STRING,
   title: Sequelize.STRING,
@@ -24,21 +37,43 @@ var Case = sequelize.define('cases', {
 
     normalizeCaseNumber: function(number) {
 
-      var matches = number.match(CASE_NUMBER_REGEXP)
-
+      var parts = parseCaseNumber(number)
       var normalized = ''
-      var year = parseInt(matches[1])
-      var type = matches[2].toUpperCase()
-      var serial = parseInt(matches[3])
-      
-      if (matches[4]) {
-        var defendant = parseInt(matches[4])
-        normalized = sprintf('%02d-%s-%06d-%3d', year, type, serial, defendant)
+
+      if (parts.defendant) {
+        normalized = sprintf('%02d-%s-%06d-%3d',
+                             parts.year, parts.type, parts.serial, parts.defendant)
       } else {
-        normalized = sprintf('%02d-%s-%06d', year, type, serial)
+        normalized = sprintf('%02d-%s-%06d',
+                             parts.year, parts.type, parts.serial)
       }
 
       return normalized
+    }
+
+  },
+  
+  instanceMethods: {
+
+    compareNumberWithMax: function(cb) {
+
+      var parts = parseCaseNumber(this.number)
+      
+      sequelize.query(
+        "SELECT COUNT(*) " +
+          "FROM cases " +
+          "WHERE TO_NUMBER(SUBSTRING(number FROM '[0-9]+$'), '999999') > " + parts.serial + " " +
+          "AND SUBSTRING(number FROM '^.*-') = '" + this.number.replace(/[0-9]+$/, '') + "'")
+        .success(function(rows) {
+          console.log(rows)
+          if (rows.length > 0) {
+            cb(null, -1)
+          } else {
+            cb(null, 1)
+          }
+        })
+        .error(cb)
+
     }
 
   }
