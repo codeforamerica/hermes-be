@@ -1,3 +1,4 @@
+/* jshint -W024 */ // For the use of 'case'
 var models = require('../../models')
 
 describe("Case model", function() {
