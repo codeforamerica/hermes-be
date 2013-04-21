@@ -11,9 +11,9 @@ var parseCaseNumber = function(caseNumber) {
   var matches = caseNumber.match(CASE_NUMBER_REGEXP)
   
   return {
-    year: parseInt(matches[1]),
+    year: parseInt(matches[1], 10),
     type: matches[2].toUpperCase(),
-    serial: parseInt(matches[3]),
+    serial: parseInt(matches[3], 10),
     defendant: matches[4]
   }
 
