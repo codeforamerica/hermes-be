@@ -1,5 +1,6 @@
 {
   "node": true,
+  "indent": 2,
   "asi": true,
   "curly": true,
   "laxbreak": true
