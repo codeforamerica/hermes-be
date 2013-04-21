@@ -5,7 +5,7 @@ var config = require('config'),
 
 var dbConfig = {
   dev: {
-    driver: "pg",
+    driver: 'pg',
     user: config.db.username,
     password: config.db.password,
     host: config.db.host,

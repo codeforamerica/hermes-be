@@ -60,10 +60,10 @@ var Case = sequelize.define('cases', {
       var parts = parseCaseNumber(this.number)
       
       sequelize.query(
-        "SELECT COUNT(*) " +
-          "FROM cases " +
-          "WHERE TO_NUMBER(SUBSTRING(number FROM '[0-9]+$'), '999999') > " + parts.serial + " " +
-          "AND SUBSTRING(number FROM '^.*-') = '" + this.number.replace(/[0-9]+$/, '') + "'")
+        'SELECT COUNT(*) ' +
+          'FROM cases ' +
+          'WHERE TO_NUMBER(SUBSTRING(number FROM \'[0-9]+$\'), \'999999\') > ' + parts.serial + ' ' +
+          'AND SUBSTRING(number FROM \'^.*-\') = \'' + this.number.replace(/[0-9]+$/, '') + '\'')
         .success(function(rows) {
           console.log(rows)
           if (rows.length > 0) {

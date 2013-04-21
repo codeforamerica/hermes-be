@@ -17,7 +17,7 @@ exports.get = function(req, res) {
   renderer.exists(id, function(exists) {
 
     if (!exists) {
-      res.send(404, common.getErrorJson("Template '" + id + "' does not exist"))
+      res.send(404, common.getErrorJson('Template "' + id + '" does not exist'))
     }
 
     else {

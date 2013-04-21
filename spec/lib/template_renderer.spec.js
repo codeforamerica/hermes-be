@@ -1,6 +1,6 @@
 var templateRenderer = require('../../lib/template_renderer.js')
 
-describe("Template Renderer", function() {
+describe('Template Renderer', function() {
 
   var renderer
 
@@ -10,22 +10,22 @@ describe("Template Renderer", function() {
     })
   }) // END - beforeEach
     
-  describe ("for render", function() {
+  describe ('for render', function() {
 
-    it ("should fail if non existent template name is used", function(done) {
+    it ('should fail if non existent template name is used', function(done) {
       
-      renderer.render("non-existent-template", {}, function(err, text) {
+      renderer.render('non-existent-template', {}, function(err, text) {
         expect(err).not.toBe(null)
         done()
       })
       
     }) // END - it should fail if non existent template name is used
     
-    it ("should succeed if existing template name is used", function(done) {
+    it ('should succeed if existing template name is used', function(done) {
       
-      renderer.render("simple-template", { caseNumber: '13-T-000111' }, function(err, text) {
+      renderer.render('simple-template', { caseNumber: '13-T-000111' }, function(err, text) {
         expect(err).toBe(null)
-        expect(text).toBe("This should be a case number: 13-T-000111.")
+        expect(text).toBe('This should be a case number: 13-T-000111.')
         done()
       })
       
@@ -33,20 +33,20 @@ describe("Template Renderer", function() {
     
   }) // END describe - for render
 
-  describe ("for exists", function() {
+  describe ('for exists', function() {
 
-    it ("should return true if template exists", function(done) {
+    it ('should return true if template exists', function(done) {
 
-      renderer.exists("simple-template", function(exists) {
+      renderer.exists('simple-template', function(exists) {
         expect(exists).toBe(true)
         done()
       })
 
     })
 
-    it ("should return false if template does NOT exist", function(done) {
+    it ('should return false if template does NOT exist', function(done) {
 
-      renderer.exists("non-existent-template", function(exists) {
+      renderer.exists('non-existent-template', function(exists) {
         expect(exists).toBe(false)
         done()
       })
@@ -55,13 +55,13 @@ describe("Template Renderer", function() {
     
   }) // END describe - for exists
 
-  describe("for raw", function() {
+  describe('for raw', function() {
 
-    it ("should return the raw template", function(done) {
+    it ('should return the raw template', function(done) {
 
-      renderer.raw("simple-template", function(err, rawText) {
+      renderer.raw('simple-template', function(err, rawText) {
         expect(err).toBe(null)
-        expect(rawText).toBe("This should be a case number: {{caseNumber}}.")
+        expect(rawText).toBe('This should be a case number: {{caseNumber}}.')
         done()
       })
 
@@ -69,9 +69,9 @@ describe("Template Renderer", function() {
 
   }) // END describe - for raw
 
-  describe("for list", function() {
+  describe('for list', function() {
     
-    it ("should return the list of existing templates", function(done) {
+    it ('should return the list of existing templates', function(done) {
 
       renderer.list(function(err, list) {
         expect(err).toBe(null)

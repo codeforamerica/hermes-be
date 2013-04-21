@@ -1,10 +1,10 @@
 var caseDetailsFetcher = require('../../lib/case_details_fetcher.js')
 
-describe("Case Details Fetcher", function() {
+describe('Case Details Fetcher', function() {
 
-  it ("should return no case details for an nonexistent case number", function(done) {
+  it ('should return no case details for an nonexistent case number', function(done) {
 
-    var fetcher = caseDetailsFetcher("19-T-999999")
+    var fetcher = caseDetailsFetcher('19-T-999999')
     fetcher.fetch(function(err, details) {
       expect(err).toBe(null)
       expect(details.title).toBe(null)
@@ -15,9 +15,9 @@ describe("Case Details Fetcher", function() {
 
   })
 
-  it ("should fetch case details with next appearance info", function(done) {
+  it ('should fetch case details with next appearance info', function(done) {
         
-    var fetcher = caseDetailsFetcher("13-T-000001")
+    var fetcher = caseDetailsFetcher('13-T-000001')
     fetcher.fetch(function(err, details) {
       expect(err).toBe(null)
       expect(details.title).toBe('COMMONWEALTH VS. CATTAN, JOSEPH RAY')
@@ -35,9 +35,9 @@ describe("Case Details Fetcher", function() {
     
   })
   
-  it ("should fetch case details without next appearance info", function(done) {
+  it ('should fetch case details without next appearance info', function(done) {
     
-    var fetcher = caseDetailsFetcher("13-F-000002")
+    var fetcher = caseDetailsFetcher('13-F-000002')
     fetcher.fetch(function(err, details) {
       expect(err).toBe(null)
       expect(details.title).toBe('COMMONWEALTH VS. WILLIAMS, MARCUS DESHUN')
@@ -48,9 +48,9 @@ describe("Case Details Fetcher", function() {
 
   })
   
-  it ("should fetch case details without defendant middle name", function(done) {
+  it ('should fetch case details without defendant middle name', function(done) {
         
-    var fetcher = caseDetailsFetcher("06-CR-004115")
+    var fetcher = caseDetailsFetcher('06-CR-004115')
     fetcher.fetch(function(err, details) {
       expect(err).toBe(null)
       expect(details.title).toBe('COMMONWEALTH VS. SMITH, WILLIAM')

@@ -4,5 +4,6 @@
   "asi": true,
   "curly": true,
   "laxbreak": true,
-  "latedef": true
+  "latedef": true,
+  "quotmark": "single"
 }

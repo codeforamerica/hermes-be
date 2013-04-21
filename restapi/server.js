@@ -21,5 +21,5 @@ server.get('/v1/templates', resources.v1.templates.get)
 
 // Start server
 server.listen(config.restapi.port, function() {
-  console.log("%s listening at %s", server.name, server.url)
+  console.log('%s listening at %s', server.name, server.url)
 })

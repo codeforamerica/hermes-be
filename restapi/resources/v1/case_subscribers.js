@@ -62,16 +62,16 @@ exports.post = function(req, res) {
   try {
     body = JSON.parse(req.body)
   } catch (err) {
-    res.send(400, common.getErrorJson("Please specify valid JSON in the body of the request."))
+    res.send(400, common.getErrorJson('Please specify valid JSON in the body of the request.'))
   }
 
   // Validation
   if (!models.case.isValidNumber(caseNumber)) {
-    res.send(400, common.getErrorJson("Please specify a valid case number."))
+    res.send(400, common.getErrorJson('Please specify a valid case number.'))
   }
 
   if (!body.hasOwnProperty('cellNumber')) {
-    res.send(400, common.getErrorJson("Please specify cellphone number."))
+    res.send(400, common.getErrorJson('Please specify cellphone number.'))
   }
 
   var cellNumber = body.cellNumber

@@ -19,10 +19,10 @@ module.exports = {
     baseuri: 'http://localhost:8080'
   },
   responses: {
-    clerkPhone: "(999) 999-9999"
+    clerkPhone: '(999) 999-9999'
   },
   misc: {
-    cellPhoneAreaCode: "502"
+    cellPhoneAreaCode: '502'
   },
   sms: {
     from: '+14159928992'
