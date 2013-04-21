@@ -1,3 +1,4 @@
+/* jshint -W024 */ // For the use of 'case'
 var async = require('async'),
     common = require('./common.js'),
     models = require('../../../models'),
