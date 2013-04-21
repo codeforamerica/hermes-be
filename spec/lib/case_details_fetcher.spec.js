@@ -37,10 +37,10 @@ describe("Case Details Fetcher", function() {
   
   it ("should fetch case details without next appearance info", function(done) {
     
-    var fetcher = caseDetailsFetcher("13-T-000004")
+    var fetcher = caseDetailsFetcher("13-F-000002")
     fetcher.fetch(function(err, details) {
       expect(err).toBe(null)
-      expect(details.title).toBe('COMMONWEALTH VS. THOMAS, DARIUS D')
+      expect(details.title).toBe('COMMONWEALTH VS. WILLIAMS, MARCUS DESHUN')
       expect(details.nextCourtDateTime).toBe(null)
       expect(details.nextCourtLocation).toBe(null)
       done()
