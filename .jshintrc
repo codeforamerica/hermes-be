@@ -7,5 +7,8 @@
   "latedef": true,
   "quotmark": "single",
   "undef": true,
-  "trailing": true
+  "trailing": true,
+  "maxdepth": 3,
+  "maxstatements": 25,
+  "maxcomplexity": 7
 }
