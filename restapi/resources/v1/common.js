@@ -1,6 +1,6 @@
 exports.getErrorJson = function(message, code) {
 
-  response = {
+  var response = {
     message: message.toString()
   }
 

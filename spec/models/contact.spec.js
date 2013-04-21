@@ -1,3 +1,4 @@
+/* jshint -W117 */ // For undeclared symbols like 'describe', 'it' and 'expect'
 var models = require('../../models'),
     config = require('config')
 

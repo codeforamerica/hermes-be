@@ -1,3 +1,4 @@
+/* jshint -W117 */ // For undeclared symbols like 'describe', 'it' and 'expect'
 var messageParser = require('../../lib/message_parser.js')
 
 describe('Message Parser', function() {

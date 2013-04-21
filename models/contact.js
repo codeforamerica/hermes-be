@@ -3,7 +3,7 @@ var config = require('config'),
     Sequelize = require('sequelize'),
     Message = require('./message.js')
 
-CELL_NUMBER_REGEXP = /^(\d{7}|(\+?1)?\d{10})$/
+var CELL_NUMBER_REGEXP = /^(\d{7}|(\+?1)?\d{10})$/
 
 var Contact = sequelize.define('contacts', {
   cell_number: Sequelize.STRING

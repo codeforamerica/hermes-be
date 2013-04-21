@@ -32,7 +32,7 @@ exports.post = function(req, res) {
     res.send(400, common.getErrorJson('Unexpected message.'))
   }
 
-  processor = messageProcessor(from, to, body, messageId, receivedAt)
+  var processor = messageProcessor(from, to, body, messageId, receivedAt)
   processor.process(function(err, responseText) {
     if (err) {
       res.send(err.code, common.getErrorJson(err.message))

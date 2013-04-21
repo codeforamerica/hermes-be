@@ -1,3 +1,4 @@
+/* jshint -W117 */ // For undeclared symbols like 'describe', 'it' and 'expect'
 var templateRenderer = require('../../lib/template_renderer.js')
 
 describe('Template Renderer', function() {

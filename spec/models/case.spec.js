@@ -1,4 +1,5 @@
 /* jshint -W024 */ // For the use of 'case'
+/* jshint -W117 */ // For undeclared symbols like 'describe', 'it' and 'expect'
 var models = require('../../models')
 
 describe('Case model', function() {

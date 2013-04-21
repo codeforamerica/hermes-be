@@ -5,5 +5,6 @@
   "curly": true,
   "laxbreak": true,
   "latedef": true,
-  "quotmark": "single"
+  "quotmark": "single",
+  "undef": true
 }

@@ -1,3 +1,4 @@
+/* jshint -W117 */ // For undeclared symbols like 'describe', 'it' and 'expect'
 var caseDetailsFetcher = require('../../lib/case_details_fetcher.js')
 
 describe('Case Details Fetcher', function() {

@@ -1,3 +1,4 @@
+/* jshint -W117 */ // For undeclared symbols like 'describe', 'it' and 'expect'
 var util = require('../../lib/util.js')
 
 describe('Utilities', function() {
