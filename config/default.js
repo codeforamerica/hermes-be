@@ -1,6 +1,6 @@
 var matches = []
 if (process.env.DATABASE_URL) {
-  
+
   var dbUrlRegex = /([^:]+):\/\/([^:]+):([^@]+)@([^:]+):([\d]+)\/(.+)/
   matches = process.env.DATABASE_URL.match(dbUrlRegex)
 

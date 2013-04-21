@@ -29,7 +29,7 @@ describe('Case model', function() {
       expect(models.case.isValidNumber('13-T-123456')).toBe(true)
       expect(models.case.isValidNumber('13-XX-123456')).toBe(true)
     })
-    
+
     // NOTE: This is not an exhaustive test
     it ('should return false if case type is invalid', function() {
       expect(models.case.isValidNumber('13-A-123456')).toBe(false)
@@ -65,7 +65,7 @@ describe('Case model', function() {
     it ('should add leading 0 to year if it is a single digit', function() {
       expect(models.case.normalizeCaseNumber('8-T-000123')).toBe('08-T-000123')
     }) // END it - should add leading 0 to year if it is a single digit
-    
+
   }) // END describe - for normalizeCaseNumber
 
 })

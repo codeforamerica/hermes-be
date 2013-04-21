@@ -10,28 +10,28 @@ describe('Template Renderer', function() {
       templatesDir: __dirname + '/../fixtures/templates/'
     })
   }) // END - beforeEach
-    
+
   describe ('for render', function() {
 
     it ('should fail if non existent template name is used', function(done) {
-      
+
       renderer.render('non-existent-template', {}, function(err, text) {
         expect(err).not.toBe(null)
         done()
       })
-      
+
     }) // END - it should fail if non existent template name is used
-    
+
     it ('should succeed if existing template name is used', function(done) {
-      
+
       renderer.render('simple-template', { caseNumber: '13-T-000111' }, function(err, text) {
         expect(err).toBe(null)
         expect(text).toBe('This should be a case number: 13-T-000111.')
         done()
       })
-      
+
     }) // END - it should fail if non existent template name is used
-    
+
   }) // END describe - for render
 
   describe ('for exists', function() {
@@ -51,9 +51,9 @@ describe('Template Renderer', function() {
         expect(exists).toBe(false)
         done()
       })
-      
+
     })
-    
+
   }) // END describe - for exists
 
   describe('for raw', function() {
@@ -71,7 +71,7 @@ describe('Template Renderer', function() {
   }) // END describe - for raw
 
   describe('for list', function() {
-    
+
     it ('should return the list of existing templates', function(done) {
 
       renderer.list(function(err, list) {

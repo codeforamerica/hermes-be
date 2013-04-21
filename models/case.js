@@ -9,7 +9,7 @@ var CASE_NUMBER_REGEXP = /(\d[1-9]?)-?(AD|C|CI|CR|D|F|H|J|M|P|S|T|XX)-?(\d{0,5}[
 var parseCaseNumber = function(caseNumber) {
 
   var matches = caseNumber.match(CASE_NUMBER_REGEXP)
-  
+
   return {
     year: parseInt(matches[1], 10),
     type: matches[2].toUpperCase(),
@@ -18,7 +18,7 @@ var parseCaseNumber = function(caseNumber) {
   }
 
 }
-  
+
 var Case = sequelize.define('cases', {
   number: Sequelize.STRING,
   title: Sequelize.STRING,
@@ -52,13 +52,13 @@ var Case = sequelize.define('cases', {
     }
 
   },
-  
+
   instanceMethods: {
 
     compareNumberWithMax: function(cb) {
 
       var parts = parseCaseNumber(this.number)
-      
+
       sequelize.query(
         'SELECT COUNT(*) ' +
           'FROM cases ' +
@@ -77,7 +77,7 @@ var Case = sequelize.define('cases', {
     }
 
   }
-  
+
 })
 
 Case.hasMany(Contact, { joinTableName: 'case_subscriptions', foreignKey: 'case_id' })

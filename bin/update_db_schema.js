@@ -15,24 +15,24 @@ var dbConfig = {
 
 var dbConfigTempFilePath = os.tmpdir() + '/database.json'
 fs.writeFile(dbConfigTempFilePath, JSON.stringify(dbConfig), function(err) {
-  
+
   if (err) {
     console.error('Could not create database config file. Aborting.')
     process.exit(1)
   }
-  
+
   var cmd = 'node_modules/db-migrate/bin/db-migrate --config ' + dbConfigTempFilePath + ' up'
   childProcess.exec(cmd, function(err, stdout, stderr) {
-    
+
     console.log(stdout)
     if (err) {
       console.error(stderr)
     }
 
     fs.unlinkSync(dbConfigTempFilePath)
-    
+
   })
-  
+
 })
 
 

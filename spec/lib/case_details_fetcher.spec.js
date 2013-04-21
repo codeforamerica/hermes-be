@@ -17,7 +17,7 @@ describe('Case Details Fetcher', function() {
   })
 
   it ('should fetch case details with next appearance info', function(done) {
-        
+
     var fetcher = caseDetailsFetcher('13-T-000001')
     fetcher.fetch(function(err, details) {
       expect(err).toBe(null)
@@ -33,11 +33,11 @@ describe('Case Details Fetcher', function() {
       expect(details.nextCourtLocation).toBe('HJ302')
       done()
     })
-    
+
   })
-  
+
   it ('should fetch case details without next appearance info', function(done) {
-    
+
     var fetcher = caseDetailsFetcher('13-F-000002')
     fetcher.fetch(function(err, details) {
       expect(err).toBe(null)
@@ -48,9 +48,9 @@ describe('Case Details Fetcher', function() {
     })
 
   })
-  
+
   it ('should fetch case details without defendant middle name', function(done) {
-        
+
     var fetcher = caseDetailsFetcher('06-CR-004115')
     fetcher.fetch(function(err, details) {
       expect(err).toBe(null)
@@ -60,8 +60,8 @@ describe('Case Details Fetcher', function() {
       expect(details.defendantLastName).toBe('Smith')
       done()
     })
-    
+
   })
 
-  
+
 })

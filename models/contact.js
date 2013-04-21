@@ -21,7 +21,7 @@ var Contact = sequelize.define('contacts', {
       if (cellNumber.length == 10) {
         cellNumber = '1' + cellNumber
       }
-      
+
       if ((cellNumber.length == 11) && (cellNumber[0] == '1')) {
         cellNumber = '+' + cellNumber
       }

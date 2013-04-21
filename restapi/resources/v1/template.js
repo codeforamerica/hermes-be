@@ -23,7 +23,7 @@ exports.get = function(req, res) {
     else {
 
       renderer.raw(id, function(err, rawText) {
-        
+
         if (err) {
           console.error(err)
           res.send(500, common.getErrorJson('Could not retrieve template.'))
@@ -36,7 +36,7 @@ exports.get = function(req, res) {
       }) // END - renderer.raw
 
     } // END else - template exists
-    
+
   }) // END - renderer.exists
 
 }

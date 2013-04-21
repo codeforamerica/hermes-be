@@ -13,9 +13,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_AFFIRMATION)
         done()
       })
-      
+
     }) // END it - should accept y
-  
+
     it ('should accept Y', function(done) {
 
       var parser = messageParser('Y')
@@ -24,7 +24,7 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_AFFIRMATION)
         done()
       })
-      
+
     }) // END it - should accept Y
 
     it ('should accept yes', function(done) {
@@ -35,9 +35,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_AFFIRMATION)
         done()
       })
-      
+
     }) // END it - should accept yes
-  
+
     it ('should accept YES', function(done) {
 
       var parser = messageParser('YES')
@@ -46,9 +46,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_AFFIRMATION)
         done()
       })
-      
+
     }) // END it - should accept YES
-  
+
     it ('should accept yEs', function(done) {
 
       var parser = messageParser('yEs')
@@ -57,9 +57,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_AFFIRMATION)
         done()
       })
-      
+
     }) // END it - should accept yEs
-  
+
     it ('should accept ye', function(done) {
 
       var parser = messageParser('ye')
@@ -68,9 +68,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_AFFIRMATION)
         done()
       })
-      
+
     }) // END it - should accept ye
-  
+
     it ('should accept yeah', function(done) {
 
       var parser = messageParser('yeah')
@@ -79,9 +79,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_AFFIRMATION)
         done()
       })
-      
+
     }) // END it - should accept yeah
-  
+
     it ('should accept yah', function(done) {
 
       var parser = messageParser('yah')
@@ -90,9 +90,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_AFFIRMATION)
         done()
       })
-      
+
     }) // END it - should accept yah
-  
+
     it ('should accept yup', function(done) {
 
       var parser = messageParser('yup')
@@ -101,9 +101,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_AFFIRMATION)
         done()
       })
-      
+
     }) // END it - should accept yup
-  
+
     it ('should accept yep', function(done) {
 
       var parser = messageParser('yep')
@@ -112,9 +112,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_AFFIRMATION)
         done()
       })
-      
+
     }) // END it - should accept yep
-  
+
     it ('should NOT accept yeppy', function(done) {
 
       var parser = messageParser('yeppy')
@@ -123,9 +123,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_OTHER)
         done()
       })
-      
+
     }) // END it - should NOT accept yeppy
-  
+
   }) // END describe - for affirmations
 
   describe('for negations', function() {
@@ -138,9 +138,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_NEGATION)
         done()
       })
-      
+
     }) // END it - should accept n
-  
+
     it ('should accept N', function(done) {
 
       var parser = messageParser('N')
@@ -149,7 +149,7 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_NEGATION)
         done()
       })
-      
+
     }) // END it - should accept N
 
     it ('should accept no', function(done) {
@@ -160,9 +160,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_NEGATION)
         done()
       })
-      
+
     }) // END it - should accept no
-  
+
     it ('should accept NO', function(done) {
 
       var parser = messageParser('NO')
@@ -171,9 +171,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_NEGATION)
         done()
       })
-      
+
     }) // END it - should accept NO
-  
+
     it ('should accept No', function(done) {
 
       var parser = messageParser('No')
@@ -182,9 +182,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_NEGATION)
         done()
       })
-      
+
     }) // END it - should accept No
-  
+
     it ('should accept nah', function(done) {
 
       var parser = messageParser('nah')
@@ -193,9 +193,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_NEGATION)
         done()
       })
-      
+
     }) // END it - should accept nah
-  
+
     it ('should accept nope', function(done) {
 
       var parser = messageParser('nope')
@@ -204,9 +204,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_NEGATION)
         done()
       })
-      
+
     }) // END it - should accept nope
-  
+
     it ('should accept never', function(done) {
 
       var parser = messageParser('never')
@@ -215,9 +215,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_NEGATION)
         done()
       })
-      
+
     }) // END it - should accept never
-  
+
     it ('should accept nada', function(done) {
 
       var parser = messageParser('nada')
@@ -226,9 +226,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_NEGATION)
         done()
       })
-      
+
     }) // END it - should accept nada
-  
+
     it ('should accept nopes', function(done) {
 
       var parser = messageParser('nopes')
@@ -237,9 +237,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_NEGATION)
         done()
       })
-      
+
     }) // END it - should accept nopes
-  
+
     it ('should accept nein', function(done) {
 
       var parser = messageParser('nein')
@@ -248,9 +248,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_NEGATION)
         done()
       })
-      
+
     }) // END it - should accept nein
-  
+
     it ('should NOT accept negative', function(done) {
 
       var parser = messageParser('negative')
@@ -259,9 +259,9 @@ describe('Message Parser', function() {
         expect(result.type).toBe(parser.MESSAGE_TYPE_OTHER)
         done()
       })
-      
+
     }) // END it - should NOT accept negative
-  
+
   }) // END describe - for negations
 
 })

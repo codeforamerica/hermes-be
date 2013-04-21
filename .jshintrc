@@ -6,5 +6,6 @@
   "laxbreak": true,
   "latedef": true,
   "quotmark": "single",
-  "undef": true
+  "undef": true,
+  "trailing": true
 }
