@@ -8,11 +8,13 @@ if (process.env.DATABASE_URL) {
 
 module.exports = {
   db: {
+    dialect: matches[1] || 'postgres',
     name: matches[6] || 'hermes',
     username: matches[2] || 'hermes',
     password: matches[3] || 'hermes',
     host: matches[4] || 'localhost',
-    port: matches[5] || 5432
+    port: matches[5] || 5432,
+    logging: console.log
   },
   restapi: {
     port: process.env.PORT || 8080,

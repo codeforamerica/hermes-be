@@ -23,7 +23,8 @@
   },
   "devDependencies": {
     "jasmine-node": "1.6.0",
-    "jshint": "1.1.0"
+    "jshint": "1.1.0",
+    "sqlite3": "2.1.7"
   },
   "scripts": {
     "lint": "jshint .",
