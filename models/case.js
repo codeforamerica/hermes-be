@@ -31,8 +31,8 @@ var Case = sequelize.define('cases', {
     },
 
     isValidNumber: function(number) {
-      return (number != undefined)
-        && (number.match(CASE_NUMBER_REGEXP) != null)
+      return (number !== undefined)
+        && (number.match(CASE_NUMBER_REGEXP) !== null)
     },
 
     normalizeCaseNumber: function(number) {

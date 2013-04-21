@@ -5,7 +5,7 @@ var sequelize = require('../lib/sequelize.js'),
 
 var Event = sequelize.define('events', {
   type: { type: Sequelize.STRING, allowNull: false },
-  data: { type: Sequelize.TEXT },
+  data: { type: Sequelize.TEXT }
 })
 
 Case.hasMany(Event)
