@@ -8,9 +8,9 @@ module.exports = function() {
     defendantMiddleName: null,
     defendantLastName: null
   }
-  
+
   var error
-  
+
   return {
 
     setTitle: function(title) {
@@ -66,5 +66,5 @@ module.exports = function() {
     }
 
   }
-  
+
 }
