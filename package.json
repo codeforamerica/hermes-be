@@ -22,9 +22,11 @@
     "npm": "1.2.x"
   },
   "devDependencies": {
-    "jasmine-node": "1.6.0"
+    "jasmine-node": "1.6.0",
+    "jshint": "1.1.0"
   },
   "scripts": {
+    "lint": "jshint .",
     "test": "jasmine-node spec/"
   },
   "license": "MIT"
