@@ -1,3 +1,4 @@
+/* jshint -W117 */ // For undeclared symbols like 'describe', 'it' and 'expect'    
 var config = require('config'),
     messageProcessor = require('../../lib/message_processor.js'),
     sequelize = require('../../lib/sequelize.js')
