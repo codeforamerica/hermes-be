@@ -6,6 +6,55 @@ var async = require('async'),
     templateRenderer = require('../../../lib/template_renderer.js'),
     smsSender = require('../../../lib/sms_sender.js')
 
+var findOrCreateContact = function(cellNumber, cb) {
+
+  models.contact.findOrCreate({ cell_number: cellNumber }, {})
+    .success(function(contact) { cb(null, contact) })
+    .error(cb)
+
+} // END function - findOrCreateContact
+
+var findOrCreateCase = function(caseNumber, cb) {
+
+  models.case.findOrCreate({ number: caseNumber }, {})
+    .success(function(kase) { cb(null, kase) })
+    .error(cb)
+  
+} // END function - findOrCreateCase
+
+var findOrCreateCaseSubscription = function(kase, contact, cb) {
+
+  models.case_subscription.findOrCreate({
+    case_id: kase.id,
+    contact_id: contact.id
+  })
+    .success(function(caseSubscription) { cb(null, caseSubscription) })
+    .error(cb)
+
+} // END function - findOrCreateCaseSubscription
+
+var setCaseSubscriptionState = function(caseSubscription, state, cb) {
+
+  caseSubscription.state = state
+  caseSubscription.save()
+    .success(function(caseSubscription) { cb(null, caseSubscription) })
+    .error(cb)
+
+} // END function - setCaseSubscriptionState
+
+var persistCaseDetails = function(kase, details, cb) {
+
+  kase.title = details.title,
+  kase.next_court_datetime = details.nextCourtDateTime,
+  kase.next_court_location = details.nextCourtLocation
+  kase.save()
+    .success(function(k) {
+      cb(null, k)
+    })
+    .error(cb)
+
+} // END function - persistCaseDetails
+
 exports.post = function(req, res) {
 
   var caseNumber = req.params.number
@@ -157,52 +206,3 @@ exports.post = function(req, res) {
   }) // END - async.parallel
   
 }
-
-var findOrCreateContact = function(cellNumber, cb) {
-
-  models.contact.findOrCreate({ cell_number: cellNumber }, {})
-    .success(function(contact) { cb(null, contact) })
-    .error(cb)
-
-} // END function - findOrCreateContact
-
-var findOrCreateCase = function(caseNumber, cb) {
-
-  models.case.findOrCreate({ number: caseNumber }, {})
-    .success(function(kase) { cb(null, kase) })
-    .error(cb)
-  
-} // END function - findOrCreateCase
-
-var findOrCreateCaseSubscription = function(kase, contact, cb) {
-
-  models.case_subscription.findOrCreate({
-    case_id: kase.id,
-    contact_id: contact.id
-  })
-    .success(function(caseSubscription) { cb(null, caseSubscription) })
-    .error(cb)
-
-} // END function - findOrCreateCaseSubscription
-
-var setCaseSubscriptionState = function(caseSubscription, state, cb) {
-
-  caseSubscription.state = state
-  caseSubscription.save()
-    .success(function(caseSubscription) { cb(null, caseSubscription) })
-    .error(cb)
-
-} // END function - setCaseSubscriptionState
-
-var persistCaseDetails = function(kase, details, cb) {
-
-  kase.title = details.title,
-  kase.next_court_datetime = details.nextCourtDateTime,
-  kase.next_court_location = details.nextCourtLocation
-  kase.save()
-    .success(function(k) {
-      cb(null, k)
-    })
-    .error(cb)
-
-} // END function - persistCaseDetails

@@ -3,5 +3,6 @@
   "indent": 2,
   "asi": true,
   "curly": true,
-  "laxbreak": true
+  "laxbreak": true,
+  "latedef": true
 }
