@@ -12,7 +12,7 @@ describe('Message Processor', function() {
     sequelize.drop()
       .success(function() {
         sequelize.sync()
-        done()
+        setTimeout(done, 10)
       })
   })
 
@@ -658,54 +658,54 @@ describe('Message Processor', function() {
 
       describe('and subscription is UNCONFIRMED', function() {
 
-        describe('and message is affirmation', function() {
+        var expectedCaseNumber = '13-T-000003'
+        var expectedCaseTitle = 'COMMONWEALTH VS. CHICKEN, COW P'
+        var expectedCaseNextCourtDateTime = new Date('5/18/2013 11:11')
+        var fakeFetcher
 
-          var expectedCaseNumber = '13-T-000003'
-          var expectedCaseTitle = 'COMMONWEALTH VS. CHICKEN, COW P'
-          var expectedCaseNextCourtDateTime = new Date('5/18/2013 11:11')
-          var fakeFetcher
+        beforeEach(function(done) {
 
-          beforeEach(function(done) {
+          fakeFetcher = fakeCaseDetailsFetcher()
+            .setTitle(expectedCaseTitle)
+            .setNextCourtDateTime(expectedCaseNextCourtDateTime)
+            .build()
 
-            fakeFetcher = fakeCaseDetailsFetcher()
-              .setTitle(expectedCaseTitle)
-              .setNextCourtDateTime(expectedCaseNextCourtDateTime)
-              .build()
-
-            models.contact.create({
-              cell_number: userCellNumber
-            })
-              .success(function(c) {
-
-                models.case.create({
-                  number: expectedCaseNumber,
-                  next_court_datetime: expectedCaseNextCourtDateTime
-                })
-                  .success(function(k) {
-
-                    models.case_subscription.create({
-                      contact_id: c.id,
-                      case_id: k.id,
-                      state: 'UNCONFIRMED'
-                    })
-                      .success(function(cs) {
-                        done()
-                      }) // END - success case_subscription.create
-                      .error(function(err) {
-                        console.error(err)
-                      })
-
-                  }) // END - success case.create
-                  .error(function(err) {
-                    console.error(err)
-                  })
-
-              }) // END - success contact.create
-              .error(function(err) {
-                console.error(err)
-              })
-
+          models.contact.create({
+            cell_number: userCellNumber
           })
+            .success(function(c) {
+
+              models.case.create({
+                number: expectedCaseNumber,
+                next_court_datetime: expectedCaseNextCourtDateTime
+              })
+                .success(function(k) {
+
+                  models.case_subscription.create({
+                    contact_id: c.id,
+                    case_id: k.id,
+                    state: 'UNCONFIRMED'
+                  })
+                    .success(function(cs) {
+                      done()
+                    }) // END - success case_subscription.create
+                    .error(function(err) {
+                      console.error(err)
+                    })
+
+                }) // END - success case.create
+                .error(function(err) {
+                  console.error(err)
+                })
+
+            }) // END - success contact.create
+            .error(function(err) {
+              console.error(err)
+            })
+
+        })
+
+        describe('and message is affirmation', function() {
 
           it('should respond with confirmed message', function(done) {
 
@@ -775,6 +775,76 @@ describe('Message Processor', function() {
           })
 
         }) // END describe - and message is affirmation
+
+        describe('and message is negation', function() {
+
+          it ('should respond with unsubscribed message response', function(done) {
+
+            var expectedOutboundMessage = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
+            var processor = messageProcessor(userCellNumber, hermesNumber, 'no', null, null)
+
+            processor.process(function(err, actualResponse) {
+              expect(actualResponse).toBe(expectedOutboundMessage)
+              done()
+            })
+
+          }) // END it - should respond with unsubscribed message response
+
+          it ('should remove subscription', function(done) {
+
+            sequelize.query('SELECT * FROM case_subscriptions')
+              .success(function(results) {
+                expect(results.length).toBe(1)
+
+                var processor = messageProcessor(userCellNumber, hermesNumber, 'no', null, null)
+                processor.process(function(err, actualResponse) {
+
+                  sequelize.query('SELECT * FROM case_subscriptions')
+                    .success(function(results) {
+                      expect(results.length).toBe(0)
+                      done()
+                    })
+                    .error(done)
+
+                }) // END - processor.process
+
+              }) // END - success
+              .error(done)
+
+          }) // END it - should remove subscription
+
+          it ('should save inbound message and outbound message (reply)', function(done) {
+
+            var expectedInboundMessage = 'no',
+            expectedOutboundMessage = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
+
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM messages')
+                .success(function(results) {
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].sender).toBe(userCellNumber)
+                  expect(results[0].recipient).toBe(hermesNumber)
+                  expect(results[0].body).toBe(expectedInboundMessage)
+                  expect(results[0].contact_id).not.toBe(null)
+                  expect(results[0].case_id).not.toBe(null)
+
+                  expect(results[1].sender).toBe(hermesNumber)
+                  expect(results[1].recipient).toBe(userCellNumber)
+                  expect(results[1].body).toBe(expectedOutboundMessage)
+                  expect(results[1].contact_id).not.toBe(null)
+                  expect(results[1].case_id).not.toBe(null)
+
+                  done()
+                })
+                .error(done)
+            })
+
+          }) // END it - should save inbound message and outbound message (reply)
+
+        }) // END describe - and message is negation
 
       }) // END describe - and subscription is UNCONFIRMED
 
