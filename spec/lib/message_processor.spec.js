@@ -2,16 +2,23 @@
 var config = require('config'),
     messageProcessor = require('../../lib/message_processor.js'),
     sequelize = require('../../lib/sequelize.js'),
-    fakeCaseDetailsFetcher = require('../fakes/case_details_fetcher.js')
+    fakeCaseDetailsFetcher = require('../fakes/case_details_fetcher.js'),
+    models = require('../../models')
 
 describe('Message Processor', function() {
 
-  beforeEach(function() {
+  beforeEach(function(done) {
     sequelize.drop()
-    sequelize.sync()
+      .success(function() {
+        sequelize.sync()
+        done()
+      })
   })
 
   describe('for process', function() {
+
+    var userCellNumber = '+1999999USER'
+    var hermesNumber = '+12222HERMES'
 
     describe('where contact has no subscriptions', function() {
 
@@ -21,7 +28,7 @@ describe('Message Processor', function() {
 
           var expectedResponse = 'Sorry, I didn\'t understand that. Please call ' + config.responses.clerkPhone + ' with questions.'
 
-          var processor = messageProcessor('+1999999USER', '+12222HERMES', 'abracadabra', null, null)
+          var processor = messageProcessor(userCellNumber, hermesNumber, 'abracadabra', null, null)
 
           processor.process(function(err, actualResponse) {
             expect(actualResponse).toBe(expectedResponse)
@@ -32,15 +39,13 @@ describe('Message Processor', function() {
 
         it ('should save contact', function(done) {
 
-          var usersCellNumber = '+1999999USER'
-
-          var processor = messageProcessor(usersCellNumber, '+12222HERMES', 'abracadabra', null, null)
+          var processor = messageProcessor(userCellNumber, hermesNumber, 'abracadabra', null, null)
 
           processor.process(function(err, actualResponse) {
             sequelize.query('SELECT * FROM contacts')
               .success(function(results) {
                 expect(results.length).toBe(1)
-                expect(results[0].cell_number).toBe(usersCellNumber)
+                expect(results[0].cell_number).toBe(userCellNumber)
                 done()
               })
               .error(done)
@@ -50,26 +55,24 @@ describe('Message Processor', function() {
 
         it ('should save inbound message and outbound message (reply)', function(done) {
 
-          var usersCellNumber = '+1999999USER',
-              expectedHermesNumber = '+12222HERMES',
-              expectedInboundMessage = 'abracadabra',
+          var expectedInboundMessage = 'abracadabra',
               expectedOutboundMessage = 'Sorry, I didn\'t understand that. Please call ' + config.responses.clerkPhone + ' with questions.'
 
-          var processor = messageProcessor(usersCellNumber, expectedHermesNumber, expectedInboundMessage, null, null)
+          var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
 
           processor.process(function(err, actualResponse) {
             sequelize.query('SELECT * FROM messages')
               .success(function(results) {
                 expect(results.length).toBe(2)
 
-                expect(results[0].sender).toBe(usersCellNumber)
-                expect(results[0].recipient).toBe(expectedHermesNumber)
+                expect(results[0].sender).toBe(userCellNumber)
+                expect(results[0].recipient).toBe(hermesNumber)
                 expect(results[0].body).toBe(expectedInboundMessage)
                 expect(results[0].contact_id).not.toBe(null)
                 expect(results[0].case_id).toBe(null)
 
-                expect(results[1].sender).toBe(expectedHermesNumber)
-                expect(results[1].recipient).toBe(usersCellNumber)
+                expect(results[1].sender).toBe(hermesNumber)
+                expect(results[1].recipient).toBe(userCellNumber)
                 expect(results[1].body).toBe(expectedOutboundMessage)
                 expect(results[1].contact_id).not.toBe(null)
                 expect(results[1].case_id).toBe(null)
@@ -99,7 +102,7 @@ describe('Message Processor', function() {
 
             var expectedResponse = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call ' + config.responses.clerkPhone + '.'
 
-            var processor = messageProcessor('+1999999USER', '+12222HERMES', '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               expect(actualResponse).toBe(expectedResponse)
@@ -110,15 +113,13 @@ describe('Message Processor', function() {
 
           it ('should save contact', function(done) {
 
-            var usersCellNumber = '+1999999USER'
-
-            var processor = messageProcessor(usersCellNumber, '+12222HERMES', '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               sequelize.query('SELECT * FROM contacts')
                 .success(function(results) {
                   expect(results.length).toBe(1)
-                  expect(results[0].cell_number).toBe(usersCellNumber)
+                  expect(results[0].cell_number).toBe(userCellNumber)
                   done()
                 })
                 .error(done)
@@ -128,26 +129,24 @@ describe('Message Processor', function() {
 
           it ('should save inbound message and outbound message (reply)', function(done) {
 
-            var usersCellNumber = '+1999999USER',
-                expectedHermesNumber = '+12222HERMES',
-                expectedInboundMessage = '13-T-000001',
+            var expectedInboundMessage = '13-T-000001',
                 expectedOutboundMessage = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call (999) 999-9999.'
 
-            var processor = messageProcessor(usersCellNumber, expectedHermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               sequelize.query('SELECT * FROM messages')
                 .success(function(results) {
                   expect(results.length).toBe(2)
 
-                  expect(results[0].sender).toBe(usersCellNumber)
-                  expect(results[0].recipient).toBe(expectedHermesNumber)
+                  expect(results[0].sender).toBe(userCellNumber)
+                  expect(results[0].recipient).toBe(hermesNumber)
                   expect(results[0].body).toBe(expectedInboundMessage)
                   expect(results[0].contact_id).not.toBe(null)
                   expect(results[0].case_id).not.toBe(null)
 
-                  expect(results[1].sender).toBe(expectedHermesNumber)
-                  expect(results[1].recipient).toBe(usersCellNumber)
+                  expect(results[1].sender).toBe(hermesNumber)
+                  expect(results[1].recipient).toBe(userCellNumber)
                   expect(results[1].body).toBe(expectedOutboundMessage)
                   expect(results[1].contact_id).not.toBe(null)
                   expect(results[1].case_id).not.toBe(null)
@@ -161,11 +160,9 @@ describe('Message Processor', function() {
 
           it ('should save case', function(done) {
 
-            var usersCellNumber = '+1999999USER',
-            expectedHermesNumber = '+12222HERMES',
-            expectedCaseNumber = '13-T-000001'
+            var expectedCaseNumber = '13-T-000001'
 
-            var processor = messageProcessor(usersCellNumber, expectedHermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               sequelize.query('SELECT * FROM cases')
@@ -184,11 +181,9 @@ describe('Message Processor', function() {
 
           it ('should save case subscription in UNCONFIRMED_DELAYED state', function(done) {
 
-            var usersCellNumber = '+1999999USER',
-            expectedHermesNumber = '+12222HERMES',
-            expectedCaseNumber = '13-T-000001'
+            var expectedCaseNumber = '13-T-000001'
 
-            var processor = messageProcessor(usersCellNumber, expectedHermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               sequelize.query('SELECT * FROM case_subscriptions')
@@ -219,7 +214,7 @@ describe('Message Processor', function() {
 
               var expectedResponse = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call ' + config.responses.clerkPhone + '.'
 
-              var processor = messageProcessor('+1999999USER', '+12222HERMES', '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
+              var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
               processor.process(function(err, actualResponse) {
                 expect(actualResponse).toBe(expectedResponse)
@@ -230,15 +225,13 @@ describe('Message Processor', function() {
 
             it ('should save contact', function(done) {
 
-              var usersCellNumber = '+1999999USER'
-
-              var processor = messageProcessor(usersCellNumber, '+12222HERMES', '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
+              var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
               processor.process(function(err, actualResponse) {
                 sequelize.query('SELECT * FROM contacts')
                   .success(function(results) {
                     expect(results.length).toBe(1)
-                    expect(results[0].cell_number).toBe(usersCellNumber)
+                    expect(results[0].cell_number).toBe(userCellNumber)
                     done()
                   })
                   .error(done)
@@ -248,26 +241,24 @@ describe('Message Processor', function() {
 
             it ('should save inbound message and outbound message (reply)', function(done) {
 
-              var usersCellNumber = '+1999999USER',
-              expectedHermesNumber = '+12222HERMES',
-              expectedInboundMessage = '13-T-000001',
+              var expectedInboundMessage = '13-T-000001',
               expectedOutboundMessage = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call (999) 999-9999.'
 
-              var processor = messageProcessor(usersCellNumber, expectedHermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+              var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
 
               processor.process(function(err, actualResponse) {
                 sequelize.query('SELECT * FROM messages')
                   .success(function(results) {
                     expect(results.length).toBe(2)
 
-                    expect(results[0].sender).toBe(usersCellNumber)
-                    expect(results[0].recipient).toBe(expectedHermesNumber)
+                    expect(results[0].sender).toBe(userCellNumber)
+                    expect(results[0].recipient).toBe(hermesNumber)
                     expect(results[0].body).toBe(expectedInboundMessage)
                     expect(results[0].contact_id).not.toBe(null)
                     expect(results[0].case_id).not.toBe(null)
 
-                    expect(results[1].sender).toBe(expectedHermesNumber)
-                    expect(results[1].recipient).toBe(usersCellNumber)
+                    expect(results[1].sender).toBe(hermesNumber)
+                    expect(results[1].recipient).toBe(userCellNumber)
                     expect(results[1].body).toBe(expectedOutboundMessage)
                     expect(results[1].contact_id).not.toBe(null)
                     expect(results[1].case_id).not.toBe(null)
@@ -281,11 +272,9 @@ describe('Message Processor', function() {
 
             it ('should save case', function(done) {
 
-              var usersCellNumber = '+1999999USER',
-              expectedHermesNumber = '+12222HERMES',
-              expectedCaseNumber = '13-T-000001'
+              var expectedCaseNumber = '13-T-000001'
 
-              var processor = messageProcessor(usersCellNumber, expectedHermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
+              var processor = messageProcessor(userCellNumber, hermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
 
               processor.process(function(err, actualResponse) {
                 sequelize.query('SELECT * FROM cases')
@@ -304,11 +293,9 @@ describe('Message Processor', function() {
 
             it ('should save case subscription in UNCONFIRMED_DELAYED state', function(done) {
 
-              var usersCellNumber = '+1999999USER',
-              expectedHermesNumber = '+12222HERMES',
-              expectedCaseNumber = '13-T-000001'
+              var expectedCaseNumber = '13-T-000001'
 
-              var processor = messageProcessor(usersCellNumber, expectedHermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
+              var processor = messageProcessor(userCellNumber, hermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
 
               processor.process(function(err, actualResponse) {
                 sequelize.query('SELECT * FROM case_subscriptions')
@@ -341,7 +328,7 @@ describe('Message Processor', function() {
 
             var expectedResponse = 'We don\'t have a court date assigned to this case yet. Please wait and we will text you the court date whenever it becomes available.'
 
-            var processor = messageProcessor('+1999999USER', '+12222HERMES', '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               expect(actualResponse).toBe(expectedResponse)
@@ -352,15 +339,13 @@ describe('Message Processor', function() {
 
           it ('should save contact', function(done) {
 
-            var usersCellNumber = '+1999999USER'
-
-            var processor = messageProcessor(usersCellNumber, '+12222HERMES', '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               sequelize.query('SELECT * FROM contacts')
                 .success(function(results) {
                   expect(results.length).toBe(1)
-                  expect(results[0].cell_number).toBe(usersCellNumber)
+                  expect(results[0].cell_number).toBe(userCellNumber)
                   done()
                 })
                 .error(done)
@@ -370,26 +355,24 @@ describe('Message Processor', function() {
 
           it ('should save inbound message and outbound message (reply)', function(done) {
 
-            var usersCellNumber = '+1999999USER',
-                expectedHermesNumber = '+12222HERMES',
-                expectedInboundMessage = '13-T-000001',
+            var expectedInboundMessage = '13-T-000001',
                 expectedOutboundMessage = 'We don\'t have a court date assigned to this case yet. Please wait and we will text you the court date whenever it becomes available.'
 
-            var processor = messageProcessor(usersCellNumber, expectedHermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               sequelize.query('SELECT * FROM messages')
                 .success(function(results) {
                   expect(results.length).toBe(2)
 
-                  expect(results[0].sender).toBe(usersCellNumber)
-                  expect(results[0].recipient).toBe(expectedHermesNumber)
+                  expect(results[0].sender).toBe(userCellNumber)
+                  expect(results[0].recipient).toBe(hermesNumber)
                   expect(results[0].body).toBe(expectedInboundMessage)
                   expect(results[0].contact_id).not.toBe(null)
                   expect(results[0].case_id).not.toBe(null)
 
-                  expect(results[1].sender).toBe(expectedHermesNumber)
-                  expect(results[1].recipient).toBe(usersCellNumber)
+                  expect(results[1].sender).toBe(hermesNumber)
+                  expect(results[1].recipient).toBe(userCellNumber)
                   expect(results[1].body).toBe(expectedOutboundMessage)
                   expect(results[1].contact_id).not.toBe(null)
                   expect(results[1].case_id).not.toBe(null)
@@ -403,11 +386,9 @@ describe('Message Processor', function() {
 
           it ('should save case', function(done) {
 
-            var usersCellNumber = '+1999999USER',
-            expectedHermesNumber = '+12222HERMES',
-            expectedCaseNumber = '13-T-000001'
+            var expectedCaseNumber = '13-T-000001'
 
-            var processor = messageProcessor(usersCellNumber, expectedHermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               sequelize.query('SELECT * FROM cases')
@@ -426,11 +407,9 @@ describe('Message Processor', function() {
 
           it ('should save case subscription in UNCONFIRMED_DELAYED state', function(done) {
 
-            var usersCellNumber = '+1999999USER',
-            expectedHermesNumber = '+12222HERMES',
-            expectedCaseNumber = '13-T-000001'
+            var expectedCaseNumber = '13-T-000001'
 
-            var processor = messageProcessor(usersCellNumber, expectedHermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               sequelize.query('SELECT * FROM case_subscriptions')
@@ -465,7 +444,7 @@ describe('Message Processor', function() {
 
             var expectedResponse = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
 
-            var processor = messageProcessor('+1999999USER', '+12222HERMES', '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               expect(actualResponse).toBe(expectedResponse)
@@ -476,15 +455,13 @@ describe('Message Processor', function() {
 
           it ('should save contact', function(done) {
 
-            var usersCellNumber = '+1999999USER'
-
-            var processor = messageProcessor(usersCellNumber, '+12222HERMES', '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               sequelize.query('SELECT * FROM contacts')
                 .success(function(results) {
                   expect(results.length).toBe(1)
-                  expect(results[0].cell_number).toBe(usersCellNumber)
+                  expect(results[0].cell_number).toBe(userCellNumber)
                   done()
                 })
                 .error(done)
@@ -494,26 +471,24 @@ describe('Message Processor', function() {
 
           it ('should save inbound message and outbound message (reply)', function(done) {
 
-            var usersCellNumber = '+1999999USER',
-                expectedHermesNumber = '+12222HERMES',
-                expectedInboundMessage = '13-T-000001',
+            var expectedInboundMessage = '13-T-000001',
                 expectedOutboundMessage = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
 
-            var processor = messageProcessor(usersCellNumber, expectedHermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               sequelize.query('SELECT * FROM messages')
                 .success(function(results) {
                   expect(results.length).toBe(2)
 
-                  expect(results[0].sender).toBe(usersCellNumber)
-                  expect(results[0].recipient).toBe(expectedHermesNumber)
+                  expect(results[0].sender).toBe(userCellNumber)
+                  expect(results[0].recipient).toBe(hermesNumber)
                   expect(results[0].body).toBe(expectedInboundMessage)
                   expect(results[0].contact_id).not.toBe(null)
                   expect(results[0].case_id).not.toBe(null)
 
-                  expect(results[1].sender).toBe(expectedHermesNumber)
-                  expect(results[1].recipient).toBe(usersCellNumber)
+                  expect(results[1].sender).toBe(hermesNumber)
+                  expect(results[1].recipient).toBe(userCellNumber)
                   expect(results[1].body).toBe(expectedOutboundMessage)
                   expect(results[1].contact_id).not.toBe(null)
                   expect(results[1].case_id).not.toBe(null)
@@ -527,11 +502,9 @@ describe('Message Processor', function() {
 
           it ('should save case', function(done) {
 
-            var usersCellNumber = '+1999999USER',
-            expectedHermesNumber = '+12222HERMES',
-            expectedCaseNumber = '13-T-000001'
+            var expectedCaseNumber = '13-T-000001'
 
-            var processor = messageProcessor(usersCellNumber, expectedHermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               sequelize.query('SELECT * FROM cases')
@@ -550,11 +523,9 @@ describe('Message Processor', function() {
 
           it ('should save case subscription in UNCONFIRMED state', function(done) {
 
-            var usersCellNumber = '+1999999USER',
-            expectedHermesNumber = '+12222HERMES',
-            expectedCaseNumber = '13-T-000001'
+            var expectedCaseNumber = '13-T-000001'
 
-            var processor = messageProcessor(usersCellNumber, expectedHermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
               sequelize.query('SELECT * FROM case_subscriptions')
@@ -573,6 +544,118 @@ describe('Message Processor', function() {
       }) // END describe - and message is case number
 
     }) // END describe - where contact has no subscriptions
+
+    describe('where contact has a subscription', function() {
+
+      describe('and message is unsubscribe', function() {
+
+        var expectedCaseNumber = '13-T-000193'
+
+        beforeEach(function(done) {
+          
+          models.contact.create({
+            cell_number: userCellNumber
+          })
+            .success(function(c) {
+              
+              models.case.create({
+                number: expectedCaseNumber
+              })
+                .success(function(k) {
+                  
+                  models.case_subscription.create({
+                    contact_id: c.id,
+                    case_id: k.id,
+                    state: 'UNCONFIRMED'
+                  })
+                    .success(function(cs) {
+                      done()                
+                    }) // END - success case_subscription.create
+                    .error(function(err) {
+                      console.error(err)
+                    })
+                  
+                }) // END - success case.create
+                .error(function(err) {
+                  console.error(err)
+                })
+              
+            }) // END - success contact.create
+            .error(function(err) {
+              console.error(err)
+            })
+
+        })
+        
+        it ('should respond with unsubscribed message response', function(done) {
+          
+          var expectedResponse = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
+          var processor = messageProcessor(userCellNumber, hermesNumber, 'U', null, null)
+          
+          processor.process(function(err, actualResponse) {
+            expect(actualResponse).toBe(expectedResponse)
+            done()
+          })
+          
+        }) // END it - should respond with unsubscribed message response
+        
+        it ('should remove subscription', function(done) {
+
+          sequelize.query('SELECT * FROM case_subscriptions')
+            .success(function(results) {
+              expect(results.length).toBe(1)
+
+              var processor = messageProcessor(userCellNumber, hermesNumber, 'U', null, null)          
+              processor.process(function(err, actualResponse) {
+
+                sequelize.query('SELECT * FROM case_subscriptions')
+                  .success(function(results) {
+                    expect(results.length).toBe(0)
+                    done()
+                  })
+                  .error(done)
+
+              }) // END - processor.process
+
+            }) // END - success
+            .error(done)
+
+        }) // END it - should remove subscription
+        
+        it ('should save inbound message and outbound message (reply)', function(done) {
+
+            var expectedInboundMessage = 'u',
+                expectedOutboundMessage = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
+
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM messages')
+                .success(function(results) {
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].sender).toBe(userCellNumber)
+                  expect(results[0].recipient).toBe(hermesNumber)
+                  expect(results[0].body).toBe(expectedInboundMessage)
+                  expect(results[0].contact_id).not.toBe(null)
+                  expect(results[0].case_id).not.toBe(null)
+
+                  expect(results[1].sender).toBe(hermesNumber)
+                  expect(results[1].recipient).toBe(userCellNumber)
+                  expect(results[1].body).toBe(expectedOutboundMessage)
+                  expect(results[1].contact_id).not.toBe(null)
+                  expect(results[1].case_id).not.toBe(null)
+
+                  done()
+                })
+                .error(done)
+            })
+
+        }) // END it - should save inbound message and outbound message (reply)
+        
+      }) // END describe - and message is unsubscribe
+
+    }) // END describe - where contact has a subscription
 
   }) // END describe - for process
 
