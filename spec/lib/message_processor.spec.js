@@ -265,7 +265,7 @@ describe('Message Processor', function() {
                     expect(results[0].body).toBe(expectedInboundMessage)
                     expect(results[0].contact_id).not.toBe(null)
                     expect(results[0].case_id).not.toBe(null)
-                    
+
                     expect(results[1].sender).toBe(expectedHermesNumber)
                     expect(results[1].recipient).toBe(usersCellNumber)
                     expect(results[1].body).toBe(expectedOutboundMessage)
