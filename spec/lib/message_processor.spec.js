@@ -27,12 +27,12 @@ describe('Message Processor', function() {
 
         it ('should respond with unrecognized message response', function(done) {
 
-          var expectedResponse = 'Sorry, I didn\'t understand that. Please call ' + config.responses.clerkPhone + ' with questions.'
+          var expectedOutboundMessage = 'Sorry, I didn\'t understand that. Please call ' + config.responses.clerkPhone + ' with questions.'
 
           var processor = messageProcessor(userCellNumber, hermesNumber, 'abracadabra', null, null)
 
           processor.process(function(err, actualResponse) {
-            expect(actualResponse).toBe(expectedResponse)
+            expect(actualResponse).toBe(expectedOutboundMessage)
             done()
           })
 
@@ -101,12 +101,12 @@ describe('Message Processor', function() {
 
           it ('should respond with cannot find case response', function(done) {
 
-            var expectedResponse = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call ' + config.responses.clerkPhone + '.'
+            var expectedOutboundMessage = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call ' + config.responses.clerkPhone + '.'
 
             var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
-              expect(actualResponse).toBe(expectedResponse)
+              expect(actualResponse).toBe(expectedOutboundMessage)
               done()
             })
 
@@ -213,12 +213,12 @@ describe('Message Processor', function() {
 
             it ('should respond with cannot find case response', function(done) {
 
-              var expectedResponse = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call ' + config.responses.clerkPhone + '.'
+              var expectedOutboundMessage = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call ' + config.responses.clerkPhone + '.'
 
               var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
               processor.process(function(err, actualResponse) {
-                expect(actualResponse).toBe(expectedResponse)
+                expect(actualResponse).toBe(expectedOutboundMessage)
                 done()
               })
 
@@ -327,12 +327,12 @@ describe('Message Processor', function() {
 
           it ('should respond with no court date yet response', function(done) {
 
-            var expectedResponse = 'We don\'t have a court date assigned to this case yet. Please wait and we will text you the court date whenever it becomes available.'
+            var expectedOutboundMessage = 'We don\'t have a court date assigned to this case yet. Please wait and we will text you the court date whenever it becomes available.'
 
             var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
-              expect(actualResponse).toBe(expectedResponse)
+              expect(actualResponse).toBe(expectedOutboundMessage)
               done()
             })
 
@@ -443,12 +443,12 @@ describe('Message Processor', function() {
 
           it ('should respond with subscription confirmation response', function(done) {
 
-            var expectedResponse = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
+            var expectedOutboundMessage = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
 
             var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
-              expect(actualResponse).toBe(expectedResponse)
+              expect(actualResponse).toBe(expectedOutboundMessage)
               done()
             })
 
@@ -590,11 +590,11 @@ describe('Message Processor', function() {
 
         it ('should respond with unsubscribed message response', function(done) {
 
-          var expectedResponse = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
+          var expectedOutboundMessage = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
           var processor = messageProcessor(userCellNumber, hermesNumber, 'U', null, null)
 
           processor.process(function(err, actualResponse) {
-            expect(actualResponse).toBe(expectedResponse)
+            expect(actualResponse).toBe(expectedOutboundMessage)
             done()
           })
 
@@ -655,6 +655,128 @@ describe('Message Processor', function() {
         }) // END it - should save inbound message and outbound message (reply)
 
       }) // END describe - and message is unsubscribe
+
+      describe('and subscription is UNCONFIRMED', function() {
+
+        describe('and message is affirmation', function() {
+
+          var expectedCaseNumber = '13-T-000003'
+          var expectedCaseTitle = 'COMMONWEALTH VS. CHICKEN, COW P'
+          var expectedCaseNextCourtDateTime = new Date('5/18/2013 11:11')
+          var fakeFetcher
+
+          beforeEach(function(done) {
+
+            fakeFetcher = fakeCaseDetailsFetcher()
+              .setTitle(expectedCaseTitle)
+              .setNextCourtDateTime(expectedCaseNextCourtDateTime)
+              .build()
+
+            models.contact.create({
+              cell_number: userCellNumber
+            })
+              .success(function(c) {
+
+                models.case.create({
+                  number: expectedCaseNumber,
+                  next_court_datetime: expectedCaseNextCourtDateTime
+                })
+                  .success(function(k) {
+
+                    models.case_subscription.create({
+                      contact_id: c.id,
+                      case_id: k.id,
+                      state: 'UNCONFIRMED'
+                    })
+                      .success(function(cs) {
+                        done()
+                      }) // END - success case_subscription.create
+                      .error(function(err) {
+                        console.error(err)
+                      })
+
+                  }) // END - success case.create
+                  .error(function(err) {
+                    console.error(err)
+                  })
+
+              }) // END - success contact.create
+              .error(function(err) {
+                console.error(err)
+              })
+
+          })
+
+          it('should respond with confirmed message', function(done) {
+
+            var expectedOutboundMessage = 'You need to come to court on Saturday, 18 May 2013, at 11:11 AM. We will send you a reminder text message a day before your court date.'
+            var processor = messageProcessor(userCellNumber, hermesNumber, 'Y', null, null, { caseDetailsFetcher: fakeFetcher })
+
+            processor.process(function(err, actualResponse) {
+              expect(actualResponse).toBe(expectedOutboundMessage)
+              done()
+            })
+
+          })
+
+          it('should update the state to CONFIRMED', function(done) {
+
+            sequelize.query('SELECT * FROM case_subscriptions')
+              .success(function(results) {
+                expect(results.length).toBe(1)
+                expect(results[0].state).toBe('UNCONFIRMED')
+
+                var processor = messageProcessor(userCellNumber, hermesNumber, 'Y', null, null, { caseDetailsFetcher: fakeFetcher })
+                processor.process(function(err, actualResponse) {
+
+                  sequelize.query('SELECT * FROM case_subscriptions')
+                    .success(function(results) {
+                      expect(results.length).toBe(1)
+                      expect(results[0].state).toBe('SUBSCRIBED')
+                      done()
+                    })
+                    .error(done)
+
+                }) // END - processor.process
+
+              }) // END - success
+              .error(done)
+
+          })
+
+          it('should save inbound messsage and outbound message (reply)', function(done) {
+
+            var expectedInboundMessage = 'y',
+            expectedOutboundMessage = 'You need to come to court on Saturday, 18 May 2013, at 11:11 AM. We will send you a reminder text message a day before your court date.'
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM messages')
+                .success(function(results) {
+                  expect(results.length).toBe(2)
+                  expect(results[0].sender).toBe(userCellNumber)
+                  expect(results[0].recipient).toBe(hermesNumber)
+                  expect(results[0].body).toBe(expectedInboundMessage)
+                  expect(results[0].contact_id).not.toBe(null)
+                  expect(results[0].case_id).not.toBe(null)
+
+                  expect(results[1].sender).toBe(hermesNumber)
+                  expect(results[1].recipient).toBe(userCellNumber)
+                  expect(results[1].body).toBe(expectedOutboundMessage)
+                  expect(results[1].contact_id).not.toBe(null)
+                  expect(results[1].case_id).not.toBe(null)
+
+                  done()
+                })
+                .error(done)
+            })
+
+          })
+
+        }) // END describe - and message is affirmation
+
+      }) // END describe - and subscription is UNCONFIRMED
 
     }) // END describe - where contact has a subscription
 
