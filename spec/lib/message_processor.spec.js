@@ -846,7 +846,210 @@ describe('Message Processor', function() {
 
         }) // END describe - and message is negation
 
+        describe('and message is a new case number', function() {
+
+          var expectedNewCaseNumber = '11-CI-111111'
+
+          it('should remove current case subscription and replace it with the new case subscription', function(done) {
+
+            sequelize.query('SELECT * FROM case_subscriptions')
+              .success(function(results) {
+                expect(results.length).toBe(1)
+                expect(results[0].case_id).toBe(1)
+                expect(results[0].state).toBe('UNCONFIRMED')
+
+                var processor = messageProcessor(userCellNumber, hermesNumber, expectedNewCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
+                processor.process(function(err, actualResponse) {
+
+                  sequelize.query('SELECT * FROM case_subscriptions')
+                    .success(function(results) {
+                      expect(results.length).toBe(1)
+                      expect(results[0].case_id).toBe(2)
+                      expect(results[0].state).toBe('UNCONFIRMED')
+                      done()
+                    })
+                    .error(done)
+
+                }) // END - processor.process
+
+              }) // END - success
+              .error(done)
+
+          }) // END it - should remove current case subscription and replace it with the new case subscription
+
+          it ('should respond with subscription confirmation response for the new case', function(done) {
+
+            var expectedOutboundMessage = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedNewCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
+
+            processor.process(function(err, actualResponse) {
+              expect(actualResponse).toBe(expectedOutboundMessage)
+              done()
+            })
+
+          }) // END it - should respond with subscription confirmation response for the new case
+
+          it('should save inbound message and outbound message (reply)', function(done) {
+
+            var expectedInboundMessage = expectedNewCaseNumber
+            var expectedOutboundMessage = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM messages')
+                .success(function(results) {
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].sender).toBe(userCellNumber)
+                  expect(results[0].recipient).toBe(hermesNumber)
+                  expect(results[0].body).toBe(expectedInboundMessage)
+                  expect(results[0].contact_id).not.toBe(null)
+                  expect(results[0].case_id).not.toBe(null)
+
+                  expect(results[1].sender).toBe(hermesNumber)
+                  expect(results[1].recipient).toBe(userCellNumber)
+                  expect(results[1].body).toBe(expectedOutboundMessage)
+                  expect(results[1].contact_id).not.toBe(null)
+                  expect(results[1].case_id).not.toBe(null)
+
+                  done()
+                })
+                .error(done)
+            })
+
+          }) // END it - should save inbound message and outbound message (reply)
+
+        }) // END describe - and message is a new case number
+
       }) // END describe - and subscription is UNCONFIRMED
+
+      describe('and subscription is UNCONFIRMED_DELAYED', function() {
+
+        var expectedCaseNumber = '13-T-663633'
+        var expectedCaseTitle = 'COMMONWEALTH VS. DUCK, DONALD P'
+        var expectedCaseNextCourtDateTime = new Date('5/18/2013 11:11')
+        var fakeFetcher
+
+        beforeEach(function(done) {
+
+          fakeFetcher = fakeCaseDetailsFetcher()
+            .setTitle(expectedCaseTitle)
+            .setNextCourtDateTime(expectedCaseNextCourtDateTime)
+            .build()
+
+          models.contact.create({
+            cell_number: userCellNumber
+          })
+            .success(function(c) {
+
+              models.case.create({
+                number: expectedCaseNumber,
+                next_court_datetime: expectedCaseNextCourtDateTime
+              })
+                .success(function(k) {
+
+                  models.case_subscription.create({
+                    contact_id: c.id,
+                    case_id: k.id,
+                    state: 'UNCONFIRMED_DELAYED'
+                  })
+                    .success(function(cs) {
+                      done()
+                    }) // END - success case_subscription.create
+                    .error(function(err) {
+                      console.error(err)
+                    })
+
+                }) // END - success case.create
+                .error(function(err) {
+                  console.error(err)
+                })
+
+            }) // END - success contact.create
+            .error(function(err) {
+              console.error(err)
+            })
+
+        })
+
+        describe('and message is a new case number', function() {
+
+          var expectedNewCaseNumber = '11-CI-111111'
+
+          it('should remove current case subscription and replace it with the new case subscription', function(done) {
+
+            sequelize.query('SELECT * FROM case_subscriptions')
+              .success(function(results) {
+                expect(results.length).toBe(1)
+                expect(results[0].case_id).toBe(1)
+                expect(results[0].state).toBe('UNCONFIRMED_DELAYED')
+
+                var processor = messageProcessor(userCellNumber, hermesNumber, expectedNewCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
+                processor.process(function(err, actualResponse) {
+
+                  sequelize.query('SELECT * FROM case_subscriptions')
+                    .success(function(results) {
+                      expect(results.length).toBe(1)
+                      expect(results[0].case_id).toBe(2)
+                      expect(results[0].state).toBe('UNCONFIRMED')
+                      done()
+                    })
+                    .error(done)
+
+                }) // END - processor.process
+
+              }) // END - success
+              .error(done)
+
+          }) // END it - should remove current case subscription and replace it with the new case subscription
+
+          it ('should respond with subscription confirmation response for the new case', function(done) {
+
+            var expectedOutboundMessage = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedNewCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
+
+            processor.process(function(err, actualResponse) {
+              expect(actualResponse).toBe(expectedOutboundMessage)
+              done()
+            })
+
+          }) // END it - should respond with subscription confirmation response for the new case
+
+          it('should save inbound message and outbound message (reply)', function(done) {
+
+            var expectedInboundMessage = expectedNewCaseNumber
+            var expectedOutboundMessage = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM messages')
+                .success(function(results) {
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].sender).toBe(userCellNumber)
+                  expect(results[0].recipient).toBe(hermesNumber)
+                  expect(results[0].body).toBe(expectedInboundMessage)
+                  expect(results[0].contact_id).not.toBe(null)
+                  expect(results[0].case_id).not.toBe(null)
+
+                  expect(results[1].sender).toBe(hermesNumber)
+                  expect(results[1].recipient).toBe(userCellNumber)
+                  expect(results[1].body).toBe(expectedOutboundMessage)
+                  expect(results[1].contact_id).not.toBe(null)
+                  expect(results[1].case_id).not.toBe(null)
+
+                  done()
+                })
+                .error(done)
+            })
+
+          }) // END it - should save inbound message and outbound message (reply)
+
+        }) // END describe - and message is a new case number
+
+      }) // END describe - and subscription is UNCONFIRMED_DELAYED
 
     }) // END describe - where contact has a subscription
 
