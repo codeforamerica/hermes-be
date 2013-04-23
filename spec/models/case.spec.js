@@ -15,6 +15,7 @@ describe('Case model', function() {
     })
 
     it ('should return true if case type is valid', function() {
+
       expect(models.case.isValidNumber('13-AD-123456')).toBe(true)
       expect(models.case.isValidNumber('13-C-123456')).toBe(true)
       expect(models.case.isValidNumber('13-CI-123456')).toBe(true)
@@ -28,6 +29,28 @@ describe('Case model', function() {
       expect(models.case.isValidNumber('13-S-123456')).toBe(true)
       expect(models.case.isValidNumber('13-T-123456')).toBe(true)
       expect(models.case.isValidNumber('13-XX-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-ad-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-c-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-ci-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-cr-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-d-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-f-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-h-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-j-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-m-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-p-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-s-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-t-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-xx-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-Ad-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-aD-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-Ci-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-cI-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-Cr-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-cR-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-Xx-123456')).toBe(true)
+      expect(models.case.isValidNumber('13-xX-123456')).toBe(true)
+
     })
 
     // NOTE: This is not an exhaustive test
