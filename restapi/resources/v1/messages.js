@@ -4,11 +4,16 @@ var twilio = require('twilio'),
 
 exports.post = function(req, res) {
 
-  var sendTwimlResponse = function(responseText) {
+  var sendTwimlResponse = function(responses) {
+
+    if (!(responses instanceof Array)) {
+      responses = [ responses ]
+    }
 
     var twiml = new twilio.TwimlResponse()
-    twiml.sms(responseText)
-    twiml.sms('Message #2')
+    for (var i in responses) {
+      twiml.sms(responses[i].toString())
+    }
 
     var twimlStr = twiml.toString()
 
