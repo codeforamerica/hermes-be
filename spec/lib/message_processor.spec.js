@@ -1513,6 +1513,75 @@ describe('Message Processor', function() {
 
         }) // END describe - and message is new case number
 
+        describe('and message is a same case number', function() {
+
+          var expectedInboundMessage = expectedCaseNumber
+          var expectedOutboundMessage = 'You need to come to court on Wednesday, 17 April 2013, at 3:29 PM. We will send you a reminder text message a day before your court date.'
+
+          it('should respond with confirmed message', function(done) {
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+
+            processor.process(function(err, actualResponse) {
+              expect(actualResponse).toBe(expectedOutboundMessage)
+              done()
+            })
+
+          }) // END it - should respond with confirmed message
+
+          it('should save inbound messsage and outbound message (reply)', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM messages')
+                .success(function(results) {
+                  expect(results.length).toBe(2)
+                  expect(results[0].sender).toBe(userCellNumber)
+                  expect(results[0].recipient).toBe(hermesNumber)
+                  expect(results[0].body).toBe(expectedInboundMessage)
+                  expect(results[0].contact_id).not.toBe(null)
+                  expect(results[0].case_id).not.toBe(null)
+
+                  expect(results[1].sender).toBe(hermesNumber)
+                  expect(results[1].recipient).toBe(userCellNumber)
+                  expect(results[1].body).toBe(expectedOutboundMessage)
+                  expect(results[1].contact_id).not.toBe(null)
+                  expect(results[1].case_id).not.toBe(null)
+
+                  done()
+                })
+                .error(done)
+            })
+
+          }) // END it - should save inbound message and outbound message (reply)
+
+          it ('should save events for inbound and outbound message (reply)', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM events')
+                .success(function(results) {
+
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].type).toBe(models.event.types().SMS_INBOUND)
+                  var data = JSON.parse(results[0].data)
+                  expect(data.message).toBe(expectedInboundMessage)
+
+                  expect(results[1].type).toBe(models.event.types().SMS_OUTBOUND)
+                  data = JSON.parse(results[1].data)
+                  expect(data.message).toBe(expectedOutboundMessage)
+
+                  done()
+
+                })
+                .error(done)
+            })
+
+          }) // END it - should save events for inbound and outbound message (reply)
+
+        }) // END describe - and message is same case number
+
         describe('and message is unrecognized', function() {
 
           var expectedInboundMessage = 'abracadabra'
