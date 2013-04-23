@@ -8,6 +8,7 @@ exports.post = function(req, res) {
 
     var twiml = new twilio.TwimlResponse()
     twiml.sms(responseText)
+    twiml.sms('Message #2')
 
     var twimlStr = twiml.toString()
 
