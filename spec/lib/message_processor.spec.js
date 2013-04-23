@@ -1396,6 +1396,7 @@ describe('Message Processor', function() {
 
               models.case.create({
                 number: expectedCaseNumber,
+                title: expectedCaseTitle,
                 next_court_datetime: expectedCaseNextCourtDateTime
               })
                 .success(function(k) {
@@ -1433,24 +1434,81 @@ describe('Message Processor', function() {
             'To change the case you want to be reminded of, text S, wait for the confirmation, and then text the new case number.'
           ]
 
-          xit ('should respond with subscription change messages', function(done) {
+          it ('should respond with subscription change messages', function(done) {
 
             var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
 
             processor.process(function(err, actualResponses) {
               expect(actualResponses instanceof Array).toBe(true)
-              // expect(actualRespones.length).toBe(2)
-              // expect(actualResponses[0]).toBe(expectedOutboundMessages[0])
-              // expect(actualResponses[1]).toBe(expectedOutboundMessages[1])
+              expect(actualResponses.length).toBe(2)
+              expect(actualResponses[0]).toBe(expectedOutboundMessages[0])
+              expect(actualResponses[1]).toBe(expectedOutboundMessages[1])
               done()
             })
 
           }) // END it - should respond with subscription change messages
 
-          xit('should save inbound message and outbound message (reply)', function(done) {
+          it('should save inbound message and outbound messages (replies)', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM messages')
+                .success(function(results) {
+                  expect(results.length).toBe(3)
+
+                  expect(results[0].sender).toBe(userCellNumber)
+                  expect(results[0].recipient).toBe(hermesNumber)
+                  expect(results[0].body).toBe(expectedInboundMessage)
+                  expect(results[0].contact_id).not.toBe(null)
+                  expect(results[0].case_id).not.toBe(null)
+
+                  expect(results[1].sender).toBe(hermesNumber)
+                  expect(results[1].recipient).toBe(userCellNumber)
+                  expect(results[1].body).toBe(expectedOutboundMessages[0])
+                  expect(results[1].contact_id).not.toBe(null)
+                  expect(results[1].case_id).not.toBe(null)
+
+                  expect(results[2].sender).toBe(hermesNumber)
+                  expect(results[2].recipient).toBe(userCellNumber)
+                  expect(results[2].body).toBe(expectedOutboundMessages[1])
+                  expect(results[2].contact_id).not.toBe(null)
+                  expect(results[2].case_id).not.toBe(null)
+
+                  done()
+                })
+                .error(done)
+            })
+
           }) // END it - should save inbound message and outbound message (reply)
 
-          xit ('should save events for inbound and outbound message (reply)', function(done) {
+          it ('should save events for inbound and outbound message (reply)', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM events')
+                .success(function(results) {
+
+                  expect(results.length).toBe(3)
+
+                  expect(results[0].type).toBe(models.event.types().SMS_INBOUND)
+                  var data = JSON.parse(results[0].data)
+                  expect(data.message).toBe(expectedInboundMessage)
+
+                  expect(results[1].type).toBe(models.event.types().SMS_OUTBOUND)
+                  data = JSON.parse(results[1].data)
+                  expect(data.message).toBe(expectedOutboundMessages[0])
+
+                  expect(results[2].type).toBe(models.event.types().SMS_OUTBOUND)
+                  data = JSON.parse(results[2].data)
+                  expect(data.message).toBe(expectedOutboundMessages[1])
+
+                  done()
+
+                })
+                .error(done)
+            })
+
           }) // END it - should save events for inbound and outbound message (reply)
 
         }) // END describe - and message is new case number
