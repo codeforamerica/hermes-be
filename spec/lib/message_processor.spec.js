@@ -790,7 +790,7 @@ describe('Message Processor', function() {
 
         describe('and message is unsubscribe', function() {
 
-          var expectedInboundMessage = 'u'
+          var expectedInboundMessage = 's'
           var expectedOutboundMessage = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
 
           it ('should respond with unsubscribed message response', function(done) {
