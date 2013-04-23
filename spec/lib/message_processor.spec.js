@@ -663,9 +663,9 @@ describe('Message Processor', function() {
         var expectedCaseNumber = '13-T-012345'
         var expectedCaseTitle = 'COMMONWEALTH VS. CHICKEN, COW P'
         var expectedCaseNextCourtDateTime = new Date('5/18/2013 11:11')
-        
+
         beforeEach(function(done) {
-          
+
           models.contact.create({
             cell_number: userCellNumber
           })
@@ -698,29 +698,29 @@ describe('Message Processor', function() {
             .error(function(err) {
               console.error(err)
             })
-          
+
         })
-        
+
         describe('and message is unrecognized', function() {
-          
+
           var expectedInboundMessage = 'abracadabra'
           var expectedOutboundMessage = 'Sorry, I didn\'t understand that. Please call ' + config.responses.clerkPhone + ' with questions.'
-          
+
           it ('should respond with unrecognized message response', function(done) {
-            
+
             var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
-            
+
             processor.process(function(err, actualResponse) {
               expect(actualResponse).toBe(expectedOutboundMessage)
               done()
             })
-            
+
           }) // END it - should respond with unrecognized message response
-          
+
           it ('should save contact', function(done) {
-            
+
             var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
-            
+
             processor.process(function(err, actualResponse) {
               sequelize.query('SELECT * FROM contacts')
                 .success(function(results) {
@@ -785,9 +785,9 @@ describe('Message Processor', function() {
             })
 
           }) // END it - should save events for inbound and outbound message (reply)
-          
+
         }) // END describe - and message is unrecognized
-        
+
         describe('and message is unsubscribe', function() {
 
           var expectedInboundMessage = 'u'
