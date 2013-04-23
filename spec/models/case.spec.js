@@ -107,6 +107,16 @@ describe('Case model', function() {
 
     }) // END it - should parse when title is like COMMONWEALTH VS. <lastname>, <firstname> <middlename>
 
+    it ('should parse names with spaces in the last name', function() {
+
+      var parsed = models.case.parseDefendantName('COMMONWEALTH VS. MOHAMED EL MOUSTAPHA, EL MOOTA')
+      expect(parsed).not.toBe(false)
+      expect(parsed.firstName).toBe('El')
+      expect(parsed.middleName).toBe('Moota')
+      expect(parsed.lastName).toBe('Mohamed El Moustapha')
+
+    }) // END it - should parse names with spaces in the last name
+
   }) // END describe - for parseDefendantName (class method)
 
   describe('for parseDefendantName (instance method)', function() {
