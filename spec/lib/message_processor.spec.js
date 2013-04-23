@@ -1374,6 +1374,160 @@ describe('Message Processor', function() {
 
       }) // END describe - and subscription is UNCONFIRMED_DELAYED
 
+      describe('and subscription is SUBSCRIBED', function() {
+
+        var expectedCaseNumber = '08-CR-000012'
+        var expectedCaseTitle = 'COMMONWEALTH VS. TREE, PALM'
+        var expectedDefendantName = 'Palm Tree'
+        var expectedCaseNextCourtDateTime = new Date('4/17/2013 15:29')
+        var fakeFetcher
+
+        beforeEach(function(done) {
+
+          fakeFetcher = fakeCaseDetailsFetcher()
+            .setTitle(expectedCaseTitle)
+            .setNextCourtDateTime(expectedCaseNextCourtDateTime)
+            .build()
+
+          models.contact.create({
+            cell_number: userCellNumber
+          })
+            .success(function(c) {
+
+              models.case.create({
+                number: expectedCaseNumber,
+                next_court_datetime: expectedCaseNextCourtDateTime
+              })
+                .success(function(k) {
+
+                  models.case_subscription.create({
+                    contact_id: c.id,
+                    case_id: k.id,
+                    state: 'SUBSCRIBED'
+                  })
+                    .success(function(cs) {
+                      done()
+                    }) // END - success case_subscription.create
+                    .error(function(err) {
+                      console.error(err)
+                    })
+
+                }) // END - success case.create
+                .error(function(err) {
+                  console.error(err)
+                })
+
+            }) // END - success contact.create
+            .error(function(err) {
+              console.error(err)
+            })
+
+        })
+
+        describe('and message is a new case number', function() {
+
+          var expectedNewCaseNumber = '11-CI-111111'
+          var expectedInboundMessage = expectedNewCaseNumber
+          var expectedOutboundMessages = [
+            'You are already getting reminders about another court case, ' + expectedCaseNumber + ' (about ' + expectedDefendantName + '). You can\'t get reminders about more than one court case.',
+            'To change the case you want to be reminded of, text S, wait for the confirmation, and then text the new case number.'
+          ]
+
+          xit ('should respond with subscription change messages', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
+
+            processor.process(function(err, actualResponses) {
+              expect(actualResponses instanceof Array).toBe(true)
+              // expect(actualRespones.length).toBe(2)
+              // expect(actualResponses[0]).toBe(expectedOutboundMessages[0])
+              // expect(actualResponses[1]).toBe(expectedOutboundMessages[1])
+              done()
+            })
+
+          }) // END it - should respond with subscription change messages
+
+          xit('should save inbound message and outbound message (reply)', function(done) {
+          }) // END it - should save inbound message and outbound message (reply)
+
+          xit ('should save events for inbound and outbound message (reply)', function(done) {
+          }) // END it - should save events for inbound and outbound message (reply)
+
+        }) // END describe - and message is new case number
+
+        describe('and message is unrecognized', function() {
+
+          var expectedInboundMessage = 'abracadabra'
+          var expectedOutboundMessage = 'Sorry, I didn\'t understand that. Please call ' + config.responses.clerkPhone + ' with questions.'
+
+          it ('should respond with unrecognized message response', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
+
+            processor.process(function(err, actualResponse) {
+              expect(actualResponse).toBe(expectedOutboundMessage)
+              done()
+            })
+
+          }) // END it - should respond with unrecognized message response
+
+          it ('should save inbound message and outbound message (reply)', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
+
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM messages')
+                .success(function(results) {
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].sender).toBe(userCellNumber)
+                  expect(results[0].recipient).toBe(hermesNumber)
+                  expect(results[0].body).toBe(expectedInboundMessage)
+                  expect(results[0].contact_id).not.toBe(null)
+                  expect(results[0].case_id).not.toBe(null)
+
+                  expect(results[1].sender).toBe(hermesNumber)
+                  expect(results[1].recipient).toBe(userCellNumber)
+                  expect(results[1].body).toBe(expectedOutboundMessage)
+                  expect(results[1].contact_id).not.toBe(null)
+                  expect(results[1].case_id).not.toBe(null)
+
+                  done()
+                })
+                .error(done)
+            })
+
+          }) // END it - should save inbound message and outbound message (reply)
+
+          it ('should save events for inbound and outbound message (reply)', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM events')
+                .success(function(results) {
+
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].type).toBe(models.event.types().SMS_INBOUND)
+                  var data = JSON.parse(results[0].data)
+                  expect(data.message).toBe(expectedInboundMessage)
+
+                  expect(results[1].type).toBe(models.event.types().SMS_OUTBOUND)
+                  data = JSON.parse(results[1].data)
+                  expect(data.message).toBe(expectedOutboundMessage)
+
+                  done()
+
+                })
+                .error(done)
+            })
+
+          }) // END it - should save events for inbound and outbound message (reply)
+
+        }) // END describe - and message is unrecognized
+
+      }) // END describe - and subscription is SUBSCRIBED
+
     }) // END describe - where contact has a subscription
 
   }) // END describe - for process
