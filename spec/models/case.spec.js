@@ -93,6 +93,10 @@ describe('Case model', function() {
       expect(models.case.normalizeCaseNumber('12CI7000')).toBe('12-CI-007000')
     }) // END it - should normalize 12CI7000 to 12-CI-007000
 
+    it ('should normalize O and o to 0', function() {
+      expect(models.case.normalizeCaseNumber('o8ToO05o')).toBe('08-T-000050')
+    })
+
   }) // END describe - for normalizeCaseNumber
 
   describe('for parseDefendantName (class method)', function() {
