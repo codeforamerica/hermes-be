@@ -24,7 +24,7 @@ describe('Message Processor', function() {
     describe('where contact has no subscriptions', function() {
 
       describe('and message is unrecognized', function() {
-        
+
         var expectedInboundMessage = 'abracadabra'
         var expectedOutboundMessage = 'Sorry, I didn\'t understand that. Please call ' + config.responses.clerkPhone + ' with questions.'
 
@@ -937,7 +937,7 @@ describe('Message Processor', function() {
 
           var expectedInboundMessage = 'no'
           var expectedOutboundMessage = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
-          
+
           it ('should respond with unsubscribed message response', function(done) {
 
             var expectedOutboundMessage = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
