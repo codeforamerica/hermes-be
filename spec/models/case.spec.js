@@ -95,4 +95,36 @@ describe('Case model', function() {
 
   }) // END describe - for normalizeCaseNumber
 
+  describe('for parseDefendantName (class method)', function() {
+
+    it ('should parse when title is like COMMONWEALTH VS. <lastname>, <firstname> <middlename>', function() {
+
+      var parsed = models.case.parseDefendantName('COMMONWEALTH VS. DOE, JOHN S')
+      expect(parsed).not.toBe(false)
+      expect(parsed.firstName).toBe('John')
+      expect(parsed.middleName).toBe('S')
+      expect(parsed.lastName).toBe('Doe')
+
+    }) // END it - should parse when title is like COMMONWEALTH VS. <lastname>, <firstname> <middlename>
+
+  }) // END describe - for parseDefendantName (class method)
+
+  describe('for parseDefendantName (instance method)', function() {
+
+    it ('should parse when title is like COMMONWEALTH VS. <lastname>, <firstname> <middlename>', function() {
+
+      var kase = models.case.build({
+        title: 'COMMONWEALTH VS. DOE, JOHN S'
+      })
+
+      var parsed = kase.parseDefendantName()
+      expect(parsed).not.toBe(false)
+      expect(parsed.firstName).toBe('John')
+      expect(parsed.middleName).toBe('S')
+      expect(parsed.lastName).toBe('Doe')
+
+    }) // END it - should parse when title is like COMMONWEALTH VS. <lastname>, <firstname> <middlename>
+
+  }) // END describe - for parseDefendantName (instance method)
+
 })
