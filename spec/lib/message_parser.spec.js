@@ -115,16 +115,16 @@ describe('Message Parser', function() {
 
     }) // END it - should accept yep
 
-    it ('should NOT accept yeppy', function(done) {
+    it ('should accept yeppy', function(done) {
 
       var parser = messageParser('yeppy')
       parser.parse(function(err, result) {
         expect(err).toBe(null)
-        expect(result.type).toBe(parser.MESSAGE_TYPE_OTHER)
+        expect(result.type).toBe(parser.MESSAGE_TYPE_AFFIRMATION)
         done()
       })
 
-    }) // END it - should NOT accept yeppy
+    }) // END it - should accept yeppy
 
   }) // END describe - for affirmations
 
@@ -251,16 +251,27 @@ describe('Message Parser', function() {
 
     }) // END it - should accept nein
 
-    it ('should NOT accept negative', function(done) {
+    it ('should accept naw', function(done) {
+
+      var parser = messageParser('naw')
+      parser.parse(function(err, result) {
+        expect(err).toBe(null)
+        expect(result.type).toBe(parser.MESSAGE_TYPE_NEGATION)
+        done()
+      })
+
+    }) // END it - should accept nein
+
+    it ('should accept negative', function(done) {
 
       var parser = messageParser('negative')
       parser.parse(function(err, result) {
         expect(err).toBe(null)
-        expect(result.type).toBe(parser.MESSAGE_TYPE_OTHER)
+        expect(result.type).toBe(parser.MESSAGE_TYPE_NEGATION)
         done()
       })
 
-    }) // END it - should NOT accept negative
+    }) // END it - should accept negative
 
   }) // END describe - for negations
 
