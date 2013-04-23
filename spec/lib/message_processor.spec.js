@@ -24,10 +24,11 @@ describe('Message Processor', function() {
     describe('where contact has no subscriptions', function() {
 
       describe('and message is unrecognized', function() {
+        
+        var expectedInboundMessage = 'abracadabra'
+        var expectedOutboundMessage = 'Sorry, I didn\'t understand that. Please call ' + config.responses.clerkPhone + ' with questions.'
 
         it ('should respond with unrecognized message response', function(done) {
-
-          var expectedOutboundMessage = 'Sorry, I didn\'t understand that. Please call ' + config.responses.clerkPhone + ' with questions.'
 
           var processor = messageProcessor(userCellNumber, hermesNumber, 'abracadabra', null, null)
 
@@ -56,9 +57,6 @@ describe('Message Processor', function() {
 
         it ('should save inbound message and outbound message (reply)', function(done) {
 
-          var expectedInboundMessage = 'abracadabra',
-              expectedOutboundMessage = 'Sorry, I didn\'t understand that. Please call ' + config.responses.clerkPhone + ' with questions.'
-
           var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
 
           processor.process(function(err, actualResponse) {
@@ -85,6 +83,31 @@ describe('Message Processor', function() {
 
         }) // END it - should save inbound message and outbound message (reply)
 
+        it ('should save events for inbound and outbound message (reply)', function(done) {
+
+          var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
+          processor.process(function(err, actualResponse) {
+            sequelize.query('SELECT * FROM events')
+              .success(function(results) {
+
+                expect(results.length).toBe(2)
+
+                expect(results[0].type).toBe(models.event.types().SMS_INBOUND)
+                var data = JSON.parse(results[0].data)
+                expect(data.message).toBe(expectedInboundMessage)
+
+                expect(results[1].type).toBe(models.event.types().SMS_OUTBOUND)
+                data = JSON.parse(results[1].data)
+                expect(data.message).toBe(expectedOutboundMessage)
+
+                done()
+
+              })
+              .error(done)
+          })
+
+        }) // END it - should save events for inbound and outbound message (reply)
+
       }) // END describe - and message is unrecognized
 
       describe('and message is case number', function() {
@@ -92,6 +115,8 @@ describe('Message Processor', function() {
         describe('and origin server is unreachable', function() {
 
           var fetcher
+          var expectedInboundMessage = '13-T-000001'
+          var expectedOutboundMessage = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call ' + config.responses.clerkPhone + '.'
 
           beforeEach(function() {
             fakeFetcher = fakeCaseDetailsFetcher()
@@ -100,8 +125,6 @@ describe('Message Processor', function() {
           })
 
           it ('should respond with cannot find case response', function(done) {
-
-            var expectedOutboundMessage = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call ' + config.responses.clerkPhone + '.'
 
             var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
@@ -130,9 +153,6 @@ describe('Message Processor', function() {
 
           it ('should save inbound message and outbound message (reply)', function(done) {
 
-            var expectedInboundMessage = '13-T-000001',
-                expectedOutboundMessage = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call (999) 999-9999.'
-
             var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
@@ -158,6 +178,31 @@ describe('Message Processor', function() {
             })
 
           }) // END it - should save inbound message and outbound message (reply)
+
+          it ('should save events for inbound and outbound message (reply)', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM events')
+                .success(function(results) {
+
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].type).toBe(models.event.types().SMS_INBOUND)
+                  var data = JSON.parse(results[0].data)
+                  expect(data.message).toBe(expectedInboundMessage)
+
+                  expect(results[1].type).toBe(models.event.types().SMS_OUTBOUND)
+                  data = JSON.parse(results[1].data)
+                  expect(data.message).toBe(expectedOutboundMessage)
+
+                  done()
+
+                })
+                .error(done)
+            })
+
+          }) // END it - should save events for inbound and outbound message (reply)
 
           it ('should save case', function(done) {
 
@@ -205,6 +250,8 @@ describe('Message Processor', function() {
           xdescribe('and case number < max. case number in Hermes', function() {
 
             var fetcher
+            var expectedInboundMessage = '13-T-000001'
+            var expectedOutboundMessage = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call ' + config.responses.clerkPhone + '.'
 
             beforeEach(function() {
               fakeFetcher = fakeCaseDetailsFetcher()
@@ -212,8 +259,6 @@ describe('Message Processor', function() {
             })
 
             it ('should respond with cannot find case response', function(done) {
-
-              var expectedOutboundMessage = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call ' + config.responses.clerkPhone + '.'
 
               var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
@@ -242,9 +287,6 @@ describe('Message Processor', function() {
 
             it ('should save inbound message and outbound message (reply)', function(done) {
 
-              var expectedInboundMessage = '13-T-000001',
-              expectedOutboundMessage = 'We\'re sorry, but we can\'t send you a reminder about this case. Please make sure the case number is correct, or call (999) 999-9999.'
-
               var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
 
               processor.process(function(err, actualResponse) {
@@ -270,6 +312,31 @@ describe('Message Processor', function() {
               })
 
             }) // END it - should save inbound message and outbound message (reply)
+
+            it ('should save events for inbound and outbound message (reply)', function(done) {
+
+              var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+              processor.process(function(err, actualResponse) {
+                sequelize.query('SELECT * FROM events')
+                  .success(function(results) {
+
+                    expect(results.length).toBe(2)
+
+                    expect(results[0].type).toBe(models.event.types().SMS_INBOUND)
+                    var data = JSON.parse(results[0].data)
+                    expect(data.message).toBe(expectedInboundMessage)
+
+                    expect(results[1].type).toBe(models.event.types().SMS_OUTBOUND)
+                    data = JSON.parse(results[1].data)
+                    expect(data.message).toBe(expectedOutboundMessage)
+
+                    done()
+
+                  })
+                  .error(done)
+              })
+
+            }) // END it - should save events for inbound and outbound message (reply)
 
             it ('should save case', function(done) {
 
@@ -317,7 +384,10 @@ describe('Message Processor', function() {
         describe('and case does not have next court date yet', function() {
 
           var fetcher
+          var expectedCaseNumber = '13-T-000001'
           var expectedCaseTitle = 'COMMONWEALTH VS. DOE, JOHN F'
+          var expectedInboundMessage = '13-T-000001'
+          var expectedOutboundMessage = 'We don\'t have a court date assigned to this case yet. Please wait and we will text you the court date whenever it becomes available.'
 
           beforeEach(function() {
             fakeFetcher = fakeCaseDetailsFetcher()
@@ -326,8 +396,6 @@ describe('Message Processor', function() {
           })
 
           it ('should respond with no court date yet response', function(done) {
-
-            var expectedOutboundMessage = 'We don\'t have a court date assigned to this case yet. Please wait and we will text you the court date whenever it becomes available.'
 
             var processor = messageProcessor(userCellNumber, hermesNumber, '13-T-000001', null, null, { caseDetailsFetcher: fakeFetcher })
 
@@ -356,9 +424,6 @@ describe('Message Processor', function() {
 
           it ('should save inbound message and outbound message (reply)', function(done) {
 
-            var expectedInboundMessage = '13-T-000001',
-                expectedOutboundMessage = 'We don\'t have a court date assigned to this case yet. Please wait and we will text you the court date whenever it becomes available.'
-
             var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
@@ -385,9 +450,32 @@ describe('Message Processor', function() {
 
           }) // END it - should save inbound message and outbound message (reply)
 
-          it ('should save case', function(done) {
+          it ('should save events for inbound and outbound message (reply)', function(done) {
 
-            var expectedCaseNumber = '13-T-000001'
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM events')
+                .success(function(results) {
+
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].type).toBe(models.event.types().SMS_INBOUND)
+                  var data = JSON.parse(results[0].data)
+                  expect(data.message).toBe(expectedInboundMessage)
+
+                  expect(results[1].type).toBe(models.event.types().SMS_OUTBOUND)
+                  data = JSON.parse(results[1].data)
+                  expect(data.message).toBe(expectedOutboundMessage)
+
+                  done()
+
+                })
+                .error(done)
+            })
+
+          }) // END it - should save events for inbound and outbound message (reply)
+
+          it ('should save case', function(done) {
 
             var processor = messageProcessor(userCellNumber, hermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
 
@@ -407,8 +495,6 @@ describe('Message Processor', function() {
           }) // END it - should save case
 
           it ('should save case subscription in UNCONFIRMED_DELAYED state', function(done) {
-
-            var expectedCaseNumber = '13-T-000001'
 
             var processor = messageProcessor(userCellNumber, hermesNumber, expectedCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
 
@@ -432,6 +518,8 @@ describe('Message Processor', function() {
           var expectedCaseTitle = 'COMMONWEALTH VS. DOE, JOHN F'
           var expectedCaseNextCourtDateTime = new Date()
           var expectedCaseNextCourtLocation = 'HJ301'
+          var expectedInboundMessage = '13-T-000001'
+          var expectedOutboundMessage = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
 
           beforeEach(function() {
             fakeFetcher = fakeCaseDetailsFetcher()
@@ -472,9 +560,6 @@ describe('Message Processor', function() {
 
           it ('should save inbound message and outbound message (reply)', function(done) {
 
-            var expectedInboundMessage = '13-T-000001',
-                expectedOutboundMessage = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
-
             var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
@@ -500,6 +585,31 @@ describe('Message Processor', function() {
             })
 
           }) // END it - should save inbound message and outbound message (reply)
+
+          it ('should save events for inbound and outbound message (reply)', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM events')
+                .success(function(results) {
+
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].type).toBe(models.event.types().SMS_INBOUND)
+                  var data = JSON.parse(results[0].data)
+                  expect(data.message).toBe(expectedInboundMessage)
+
+                  expect(results[1].type).toBe(models.event.types().SMS_OUTBOUND)
+                  data = JSON.parse(results[1].data)
+                  expect(data.message).toBe(expectedOutboundMessage)
+
+                  done()
+
+                })
+                .error(done)
+            })
+
+          }) // END it - should save events for inbound and outbound message (reply)
 
           it ('should save case', function(done) {
 
@@ -551,6 +661,9 @@ describe('Message Processor', function() {
       describe('and message is unsubscribe', function() {
 
         var expectedCaseNumber = '13-T-000193'
+        var expectedInboundMessage = 'u'
+        var expectedOutboundMessage = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
+
 
         beforeEach(function(done) {
 
@@ -590,7 +703,6 @@ describe('Message Processor', function() {
 
         it ('should respond with unsubscribed message response', function(done) {
 
-          var expectedOutboundMessage = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
           var processor = messageProcessor(userCellNumber, hermesNumber, 'U', null, null)
 
           processor.process(function(err, actualResponse) {
@@ -625,9 +737,6 @@ describe('Message Processor', function() {
 
         it ('should save inbound message and outbound message (reply)', function(done) {
 
-          var expectedInboundMessage = 'u',
-          expectedOutboundMessage = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
-
           var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
 
           processor.process(function(err, actualResponse) {
@@ -653,6 +762,31 @@ describe('Message Processor', function() {
           })
 
         }) // END it - should save inbound message and outbound message (reply)
+
+        it ('should save events for inbound and outbound message (reply)', function(done) {
+
+          var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+          processor.process(function(err, actualResponse) {
+            sequelize.query('SELECT * FROM events')
+              .success(function(results) {
+
+                expect(results.length).toBe(2)
+
+                expect(results[0].type).toBe(models.event.types().SMS_INBOUND)
+                var data = JSON.parse(results[0].data)
+                expect(data.message).toBe(expectedInboundMessage)
+
+                expect(results[1].type).toBe(models.event.types().SMS_OUTBOUND)
+                data = JSON.parse(results[1].data)
+                expect(data.message).toBe(expectedOutboundMessage)
+
+                done()
+
+              })
+              .error(done)
+          })
+
+        }) // END it - should save events for inbound and outbound message (reply)
 
       }) // END describe - and message is unsubscribe
 
@@ -707,9 +841,10 @@ describe('Message Processor', function() {
 
         describe('and message is affirmation', function() {
 
+          var expectedInboundMessage = 'y'
+          var expectedOutboundMessage = 'You need to come to court on Saturday, 18 May 2013, at 11:11 AM. We will send you a reminder text message a day before your court date.'
           it('should respond with confirmed message', function(done) {
 
-            var expectedOutboundMessage = 'You need to come to court on Saturday, 18 May 2013, at 11:11 AM. We will send you a reminder text message a day before your court date.'
             var processor = messageProcessor(userCellNumber, hermesNumber, 'Y', null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
@@ -746,9 +881,6 @@ describe('Message Processor', function() {
 
           it('should save inbound messsage and outbound message (reply)', function(done) {
 
-            var expectedInboundMessage = 'y',
-            expectedOutboundMessage = 'You need to come to court on Saturday, 18 May 2013, at 11:11 AM. We will send you a reminder text message a day before your court date.'
-
             var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
@@ -772,12 +904,40 @@ describe('Message Processor', function() {
                 .error(done)
             })
 
-          })
+          }) // END it - should save inbound message and outbound message (reply)
+
+          it ('should save events for inbound and outbound message (reply)', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM events')
+                .success(function(results) {
+
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].type).toBe(models.event.types().SMS_INBOUND)
+                  var data = JSON.parse(results[0].data)
+                  expect(data.message).toBe(expectedInboundMessage)
+
+                  expect(results[1].type).toBe(models.event.types().SMS_OUTBOUND)
+                  data = JSON.parse(results[1].data)
+                  expect(data.message).toBe(expectedOutboundMessage)
+
+                  done()
+
+                })
+                .error(done)
+            })
+
+          }) // END it - should save events for inbound and outbound message (reply)
 
         }) // END describe - and message is affirmation
 
         describe('and message is negation', function() {
 
+          var expectedInboundMessage = 'no'
+          var expectedOutboundMessage = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
+          
           it ('should respond with unsubscribed message response', function(done) {
 
             var expectedOutboundMessage = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
@@ -815,9 +975,6 @@ describe('Message Processor', function() {
 
           it ('should save inbound message and outbound message (reply)', function(done) {
 
-            var expectedInboundMessage = 'no',
-            expectedOutboundMessage = 'Thanks! You will no longer receive reminders for case # ' + expectedCaseNumber + '.'
-
             var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null)
 
             processor.process(function(err, actualResponse) {
@@ -844,11 +1001,38 @@ describe('Message Processor', function() {
 
           }) // END it - should save inbound message and outbound message (reply)
 
+          it ('should save events for inbound and outbound message (reply)', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM events')
+                .success(function(results) {
+
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].type).toBe(models.event.types().SMS_INBOUND)
+                  var data = JSON.parse(results[0].data)
+                  expect(data.message).toBe(expectedInboundMessage)
+
+                  expect(results[1].type).toBe(models.event.types().SMS_OUTBOUND)
+                  data = JSON.parse(results[1].data)
+                  expect(data.message).toBe(expectedOutboundMessage)
+
+                  done()
+
+                })
+                .error(done)
+            })
+
+          }) // END it - should save events for inbound and outbound message (reply)
+
         }) // END describe - and message is negation
 
         describe('and message is a new case number', function() {
 
           var expectedNewCaseNumber = '11-CI-111111'
+          var expectedInboundMessage = expectedNewCaseNumber
+          var expectedOutboundMessage = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
 
           it('should remove current case subscription and replace it with the new case subscription', function(done) {
 
@@ -879,7 +1063,6 @@ describe('Message Processor', function() {
 
           it ('should respond with subscription confirmation response for the new case', function(done) {
 
-            var expectedOutboundMessage = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
             var processor = messageProcessor(userCellNumber, hermesNumber, expectedNewCaseNumber, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
@@ -890,9 +1073,6 @@ describe('Message Processor', function() {
           }) // END it - should respond with subscription confirmation response for the new case
 
           it('should save inbound message and outbound message (reply)', function(done) {
-
-            var expectedInboundMessage = expectedNewCaseNumber
-            var expectedOutboundMessage = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
 
             var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
 
@@ -919,6 +1099,31 @@ describe('Message Processor', function() {
             })
 
           }) // END it - should save inbound message and outbound message (reply)
+
+          it ('should save events for inbound and outbound message (reply)', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM events')
+                .success(function(results) {
+
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].type).toBe(models.event.types().SMS_INBOUND)
+                  var data = JSON.parse(results[0].data)
+                  expect(data.message).toBe(expectedInboundMessage)
+
+                  expect(results[1].type).toBe(models.event.types().SMS_OUTBOUND)
+                  data = JSON.parse(results[1].data)
+                  expect(data.message).toBe(expectedOutboundMessage)
+
+                  done()
+
+                })
+                .error(done)
+            })
+
+          }) // END it - should save events for inbound and outbound message (reply)
 
         }) // END describe - and message is a new case number
 
@@ -976,6 +1181,8 @@ describe('Message Processor', function() {
         describe('and message is a new case number', function() {
 
           var expectedNewCaseNumber = '11-CI-111111'
+          var expectedInboundMessage = expectedNewCaseNumber
+          var expectedOutboundMessage = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
 
           it('should remove current case subscription and replace it with the new case subscription', function(done) {
 
@@ -1018,9 +1225,6 @@ describe('Message Processor', function() {
 
           it('should save inbound message and outbound message (reply)', function(done) {
 
-            var expectedInboundMessage = expectedNewCaseNumber
-            var expectedOutboundMessage = 'This case is about ' + expectedCaseTitle + '. Is this the case you want us to remind you about? Text YES or NO.'
-
             var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
 
             processor.process(function(err, actualResponse) {
@@ -1046,6 +1250,31 @@ describe('Message Processor', function() {
             })
 
           }) // END it - should save inbound message and outbound message (reply)
+
+          it ('should save events for inbound and outbound message (reply)', function(done) {
+
+            var processor = messageProcessor(userCellNumber, hermesNumber, expectedInboundMessage, null, null, { caseDetailsFetcher: fakeFetcher })
+            processor.process(function(err, actualResponse) {
+              sequelize.query('SELECT * FROM events')
+                .success(function(results) {
+
+                  expect(results.length).toBe(2)
+
+                  expect(results[0].type).toBe(models.event.types().SMS_INBOUND)
+                  var data = JSON.parse(results[0].data)
+                  expect(data.message).toBe(expectedInboundMessage)
+
+                  expect(results[1].type).toBe(models.event.types().SMS_OUTBOUND)
+                  data = JSON.parse(results[1].data)
+                  expect(data.message).toBe(expectedOutboundMessage)
+
+                  done()
+
+                })
+                .error(done)
+            })
+
+          }) // END it - should save events for inbound and outbound message (reply)
 
         }) // END describe - and message is a new case number
 
