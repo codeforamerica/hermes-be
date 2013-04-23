@@ -89,6 +89,10 @@ describe('Case model', function() {
       expect(models.case.normalizeCaseNumber('8-T-000123')).toBe('08-T-000123')
     }) // END it - should add leading 0 to year if it is a single digit
 
+    it ('should normalize 12CI7000 to 12-CI-007000', function() {
+      expect(models.case.normalizeCaseNumber('12CI7000')).toBe('12-CI-007000')
+    }) // END it - should normalize 12CI7000 to 12-CI-007000
+
   }) // END describe - for normalizeCaseNumber
 
 })

@@ -4,7 +4,7 @@ var sequelize = require('../lib/sequelize.js'),
     Contact = require('./contact.js'),
     Message = require('./message.js')
 
-var CASE_NUMBER_REGEXP = /(\d[1-9]?)-?(AD|C|CI|CR|D|F|H|J|M|P|S|T|XX)-?(\d{0,5}[1-9])-?(\d{0,2}[1-9])?/i
+var CASE_NUMBER_REGEXP = /(\d{1,2})-?(AD|C|CI|CR|D|F|H|J|M|P|S|T|XX)-?(\d{1,6})-?(\d{0,2}[1-9])?/i
 
 var parseCaseNumber = function(caseNumber) {
 
