@@ -22,13 +22,14 @@
     "npm": "1.2.x"
   },
   "devDependencies": {
+    "istanbul": "0.1.34",
     "jasmine-node": "1.6.0",
     "jshint": "1.1.0",
     "sqlite3": "2.1.7"
   },
   "scripts": {
     "lint": "jshint .",
-    "test": "jasmine-node spec/"
+    "test": "istanbul cover jasmine-node -- spec/"
   },
   "license": "MIT"
 }
