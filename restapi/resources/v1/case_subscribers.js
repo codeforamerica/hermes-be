@@ -93,7 +93,7 @@ exports.post = function(req, res) {
 
   cellNumber = models.contact.normalizeCellNumber(cellNumber)
   caseNumber = models.case.normalizeCaseNumber(caseNumber)
-  
+
   async.parallel([
 
     // Create contact if it doesn't already exist
