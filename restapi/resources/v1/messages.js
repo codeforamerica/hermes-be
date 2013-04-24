@@ -11,7 +11,9 @@ exports.post = function(req, res) {
     }
 
     var twiml = new twilio.TwimlResponse()
+    twiml.sms(responses.shift())
     for (var i in responses) {
+      twiml.pause({ length: 5 })
       twiml.sms(responses[i].toString())
     }
 
