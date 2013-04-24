@@ -82,13 +82,15 @@
     POST {base-uri}/v1/case/13-T-000001/subscribers
 
     {
-      "cellNumber": "1111111111"
+      "cellNumber": "1111111111",
+      "subscriptionDateTime": "2013-04-24T15:30:49.761Z"
     }
 
 ###### Notes
 * **IMPORTANT!** The `cellNumber` specified in the request body will receive an SMS about their subscription. So please be aware of the number you use there. It is recommended you **use your own number when testing**.
 * The case number specified in the URI will be normalized.
-* The cell number specified in the request body will be normalized. If a 7-digit number is specified, a default area code will be prefixed. This default area code is specified by the configuration key `misc.cellPhoneAreaCode` (defined in [these configuration files](https://github.com/codeforamerica/hermes-be/tree/master/config)).
+* The `cellNumber` specified in the request body will be normalized. If a 7-digit number is specified, a default area code will be prefixed. This default area code is specified by the configuration key `misc.cellPhoneAreaCode` (defined in [these configuration files](https://github.com/codeforamerica/hermes-be/tree/master/config)).
+* The `subscriptionDateTime` specified in the request body is optional; default = date/time on server when request is received. If specified, please use the ISO8601 format as shown in the example request above.
 
 ##### Response (success)
 

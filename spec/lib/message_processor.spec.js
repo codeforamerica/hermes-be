@@ -962,6 +962,7 @@ describe('Message Processor', function() {
                     .success(function(results) {
                       expect(results.length).toBe(1)
                       expect(results[0].state).toBe('SUBSCRIBED')
+                      expect(Date.parse(results[0].subscription_datetime)).toBeGreaterThan(0)
                       done()
                     })
                     .error(done)

@@ -22,11 +22,14 @@ var findOrCreateCase = function(caseNumber, cb) {
 
 } // END function - findOrCreateCase
 
-var findOrCreateCaseSubscription = function(kase, contact, cb) {
+var findOrCreateCaseSubscription = function(kase, contact, subscriptionDateTime, cb) {
 
   models.case_subscription.findOrCreate({
     case_id: kase.id,
     contact_id: contact.id
+  }, {
+    state: 'SUBSCRIBED',
+    subscription_datetime: subscriptionDateTime
   })
     .success(function(caseSubscription) { cb(null, caseSubscription) })
     .error(cb)
@@ -62,7 +65,7 @@ exports.post = function(req, res) {
   try {
     body = JSON.parse(req.body)
   } catch (err) {
-    res.send(400, common.getErrorJson('Please specify valid JSON in the body of the request.'))
+    res.send(400, common.getErrorJson('Please specify valid JSON in the body of the request. See https://github.com/codeforamerica/hermes-be/blob/master/restapi/README.md#to-create-a-new-case-subscriber for details.'))
   }
 
   // Validation
@@ -80,9 +83,17 @@ exports.post = function(req, res) {
     res.send(400, common.getErrorJson('Please specify a valid cellphone number.'))
   }
 
+  var subscriptionDateTime = new Date()
+  if (body.hasOwnProperty('subscriptionDateTime')) {
+    var ts = Date.parse(body.subscriptionDateTime)
+    if (ts > 0) {
+      subscriptionDateTime = new Date(ts)
+    }
+  }
+
   cellNumber = models.contact.normalizeCellNumber(cellNumber)
   caseNumber = models.case.normalizeCaseNumber(caseNumber)
-
+  
   async.parallel([
 
     // Create contact if it doesn't already exist
@@ -102,104 +113,7 @@ exports.post = function(req, res) {
       var contact = results[0]
       var kase = results[1]
 
-      // Create case subscription if it doesn't already exist
-      findOrCreateCaseSubscription(kase, contact, function(err, caseSubscription) {
-
-        if (err) {
-          res.send(500, 'Could not find or create case subscription.')
-        }
-
-        else {
-
-          setCaseSubscriptionState(caseSubscription, 'SUBSCRIBED', function(err) {
-
-            if (err) {
-              res.send(500, 'Could not set subscription state to SUBSCRIBED.')
-            }
-
-            else {
-
-              // Fetch case details
-              var fetcher = caseDetailsFetcher(caseNumber)
-              fetcher.fetch(function(err, details) {
-
-                if (err) {
-                  res.send(500, 'Could not fetch case details.')
-                }
-
-                else {
-
-                  // Persist case details
-                  persistCaseDetails(kase, details, function(err) {
-
-                    if (err) {
-                      res.send(500, 'Could not persist case details.')
-                    }
-
-                    else {
-
-                      // Render SMS message
-                      var renderer = templateRenderer()
-                      details.caseNumber = caseNumber
-                      details.nextCourtDate = details.nextCourtDateTime.toFormat('DDDD, D MMMM YYYY')
-                      details.nextCourtTime = details.nextCourtDateTime.toFormat('H:MI PP')
-                      details.defendantNameExists = function() {
-                        return (details.defendantFirstName && details.defendantLastName)
-                      }
-
-                      renderer.render('resp-ok-case-subscription-confirmed', details, function(err, message) {
-
-                        if (err) {
-                          res.send(500, 'Could not render SMS message.')
-                        }
-
-                        else {
-
-                          // Send subscription SMS
-                          var sender = smsSender()
-                          sender.send(contact.cell_number, message, function(err, result) {
-
-                            if (err) {
-                              res.send(500, 'Could not send subscription SMS.')
-                            }
-
-                            else {
-
-                              // Record the conversation
-                              models.message.create({
-                                sender: result.sender,
-                                recipient: result.recipient,
-                                body: message,
-                                external_id: result.externalId,
-                                case_id: kase.id,
-                                contact_id: contact.id
-                              })
-                                .success(function(m) { res.send(201, 'Subscription created') })
-                                .error(function(err) { console.error(err); res.send(201, 'Subscription created but could not record outbound SMS conversation.') })
-
-                            } // END else - send subscription SMS
-
-                          }) // END - sendSubscriptionSms
-
-                        } // END else - render SMS message
-
-                      }) // END - renderSmsMessage
-
-                    } // END else - persist case details
-
-                  }) // END - persistCaseDetails
-
-                } // END else - fetch case details
-
-              }) // END - fetchCaseDetails
-
-            } // END else - set subscription state
-
-          }) // END - setCaseSubscriptionState
-
-        } // END else - find or create subscription
-
-      }) // END - findOrCreateCaseSubscription
+      res.send(201, 'Case subscription created.')
 
     } // END else - find or create case or contact
 

@@ -4,7 +4,8 @@ var sequelize = require('../lib/sequelize.js'),
     Case = require('./case.js')
 
 var CaseSubscription = sequelize.define('case_subscriptions', {
-  state: { type: Sequelize.ENUM('SUBSCRIBED', 'UNCONFIRMED', 'UNCONFIRMED_DELAYED'), allowNull: false }
+  state: { type: Sequelize.ENUM('SUBSCRIBED', 'UNCONFIRMED', 'UNCONFIRMED_DELAYED'), allowNull: false },
+  subscription_datetime: Sequelize.DATE
 })
 
 Case.hasMany(CaseSubscription)
