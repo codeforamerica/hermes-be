@@ -4,7 +4,7 @@ var sequelize = require('../lib/sequelize.js'),
     Contact = require('./contact.js'),
     Message = require('./message.js')
 
-var CASE_NUMBER_REGEXP = /([\dO]{1,2})-?(AD|C|CI|CR|D|F|H|J|M|P|S|T|XX)-?([\dO]{1,6})-?([\dO]{0,3})?/i
+var CASE_NUMBER_REGEXP = /([\dO]{1,2})[\s\-]*(AD|C|CI|CR|D|F|H|J|M|P|S|T|XX)[\s\-]*([\dO]{1,6})[\s\-]*([\dO]{0,3})?/i
 var DEFENDANT_NAME_REGEXP = /COMMONWEALTH\s+VS.\s+(.+),\s+(\S+)(\s+(\S+))?/
 
 String.prototype.toProperCase = function () {
